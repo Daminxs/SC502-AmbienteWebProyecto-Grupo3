@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Virtual Universitario</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+
+    <!-- Encabezado principal -->
+    <header>
+        <h1>Campus Virtual Universitario</h1>
+        <p>Plataforma de gestion academica</p>
+    </header>
+
+    <main>
+
+        <!-- Inicio de sesion -->
+        <section>
+            <h2>Bienvenido</h2>
+            <p>Ingresa tus credenciales para acceder al campus virtual.</p>
+
+            <form action="api/login.php" method="POST">
+
+                <div>
+                    <label for="correo">Correo electronico:</label>
+                    <input type="email" id="correo" name="correo" placeholder="ejemplo@universidad.com" required>
+                </div>
+
+                <div>
+                    <label for="password">Contrasena:</label>
+                    <input type="password" id="password" name="password" placeholder="Ingresa tu contrasena" required>
+                </div>
+
+                <button type="submit">Iniciar sesion</button>
+
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Campus Virtual Universitario - 2026</p>
+    </footer>
+
+</body>
+
+</html>
