@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -5,39 +6,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Virtual Universitario</title>
-    <link rel="stylesheet" href="css/estilos.css">
+
+    <!-- Bootstrap y Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/estilos.css">
 </head>
 
 <body>
 
-    <!-- Encabezado principal -->
+    <!-- Encabezado/Titulo principal -->
     <header>
-        <h1>Campus Virtual Universitario</h1>
-        <p>Plataforma de gestion academica</p>
+        <h1 id="titulo">Campus Virtual Universitario</h1>
+        <p>Tu espacio de aprendizaje academico</p>
     </header>
 
     <main>
 
-        <!-- Inicio de sesion -->
-        <section>
-            <h2>Bienvenido</h2>
-            <p>Ingresa tus credenciales para acceder al campus virtual.</p>
+        <section id="inicio">
 
-            <form action="api/login.php" method="POST">
+            <div class="container">
 
-                <div>
-                    <label for="correo">Correo electronico:</label>
-                    <input type="email" id="correo" name="correo" placeholder="ejemplo@universidad.com" required>
+                <div class="row align-items-center">
+
+                    <!-- Informacion del campus -->
+                    <div class="col-md-6">
+                        <h2>Bienvenido al Campus Virtual</h2>
+
+                        <p>
+                            Accede a tus cursos, consulta materiales,
+                            entrega asignaciones y revisa tus calificaciones
+                            desde un solo lugar.
+                        </p>
+
+                        <p class="destacado">
+                            Todo lo que necesitas para tu vida academica.
+                        </p>
+                    </div>
+
+                    <!-- Formulario de inicio de sesion -->
+                    <div class="col-md-6">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h3 class="card-title text-center">
+                                    Iniciar sesion
+                                </h3>
+
+                                <p class="text-center">
+                                    Ingresa tus credenciales para continuar.
+                                </p>
+
+                                <form id="formLogin">
+
+                                    <div class="mb-3">
+                                        <label for="correoLogin" class="form-label">
+                                            Correo electronico
+                                        </label>
+
+                                        <input type="email" class="form-control" id="correoLogin" name="correoLogin"
+                                            placeholder="correo@universidad.com" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="passwordLogin" class="form-label">
+                                            Contrasena
+                                        </label>
+
+                                        <input type="password" class="form-control" id="passwordLogin"
+                                            name="passwordLogin" placeholder="Ingresa tu contrasena" required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary" id="btnIniciarSesion">
+                                        Iniciar sesion
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div>
-                    <label for="password">Contrasena:</label>
-                    <input type="password" id="password" name="password" placeholder="Ingresa tu contrasena" required>
-                </div>
+            </div>
 
-                <button type="submit">Iniciar sesion</button>
-
-            </form>
         </section>
 
     </main>
@@ -45,7 +102,14 @@
     <!-- Footer -->
     <footer>
         <p>Campus Virtual Universitario - 2026</p>
+        <p>San Jose, Costa Rica</p>
     </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript -->
+    <script src="./js/script.js"></script>
 
 </body>
 
