@@ -250,3 +250,25 @@ footer p {
     margin: 5px;
     font-size: 14px;
 }
+
+.caracteristicas {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.caracteristica {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 12px;
+    border-left: 3px solid #17365d;
+    color: #34465c;
+    font-size: 15px;
+}
+
+.caracteristica i {
+    color: #1d568c;
+    font-size: 18px;
+}

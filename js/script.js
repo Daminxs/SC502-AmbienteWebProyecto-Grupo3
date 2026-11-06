@@ -42,7 +42,7 @@ formLogin.addEventListener("submit", function(event) {
     const correo = inputCorreo.value.trim();
     const password = inputPassword.value;
 
-    if (correo === "" || password.trim() === "") {
+    if (correo === "" || password === "") {
 
         mostrarMensaje("Complete todos los campos para continuar.", "danger"); // Verificar que los campos tengan informacion
 
