@@ -20,4 +20,4 @@ El sistema centraliza las actividades academicas entre estudiantes, docentes y a
 - Nicole Delgado
 - Naomy Oviedo
 
-Universidad Fidelitas - Curso SC502 | Clase del Sábado 
+Universidad Fidelitas - Curso SC502 Ambiente Web | Clase del Sábado 

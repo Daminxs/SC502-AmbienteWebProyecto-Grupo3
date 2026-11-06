@@ -1,0 +1,252 @@
+
+/* Configuracion general del CSS */
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background-color: #f3f6fa;
+    color: #263445;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Encabezado */
+
+header {
+    background-color: #17365d;
+    padding: 30px 15px;
+    text-align: center;
+    width: 100%;
+}
+
+#titulo {
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #dce6f2;
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Contenido principal */
+
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 50px 15px;
+}
+
+#inicio {
+    width: 100%;
+}
+
+/* Informacion del campus */
+
+.informacion-campus {
+    padding: 25px;
+}
+
+.etiqueta {
+    display: inline-block;
+    background-color: #e1ebf7;
+    color: #17365d;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#inicio h2 {
+    color: #17365d;
+    font-size: 34px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#inicio p {
+    color: #596779;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+#inicio .destacado {
+    color: #1d568c;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+/* Caracteristicas */
+
+.caracteristicas {
+    margin-top: 30px;
+}
+
+.caracteristica {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    color: #34465c;
+    font-size: 15px;
+}
+
+.caracteristica i {
+    color: #1d568c;
+    font-size: 22px;
+}
+
+/* Tarjeta de inicio de sesion */
+
+.tarjeta-login {
+    max-width: 470px;
+    margin: auto;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(23, 54, 93, 0.12);
+}
+
+.tarjeta-login .card-body {
+    padding: 35px;
+}
+
+.icono-login {
+    width: 65px;
+    height: 65px;
+    background-color: #e8f0fa;
+    color: #17365d;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+}
+
+.icono-login i {
+    font-size: 32px;
+}
+
+.card-title {
+    color: #17365d;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.texto-login {
+    color: #788596;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* Formulario */
+
+form {
+    width: 100%;
+}
+
+label {
+    color: #34465c;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.input-group-text {
+    background-color: #f1f4f8;
+    color: #52677e;
+    border-color: #ced6e0;
+}
+
+.form-control {
+    padding: 11px;
+    border-color: #ced6e0;
+}
+
+.form-control:focus {
+    border-color: #3978b8;
+    box-shadow: 0 0 0 0.2rem rgba(57, 120, 184, 0.15);
+}
+
+.input-group .btn {
+    border-color: #ced6e0;
+}
+
+.input-group .btn:hover {
+    background-color: #e8f0fa;
+    color: #17365d;
+}
+
+/* Botones */
+
+.btn.btn-primary {
+    background-color: #17365d;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    border-radius: 7px;
+    transition: background-color 0.2s ease;
+}
+
+.btn.btn-primary:hover {
+    background-color: #24558a;
+}
+
+.btn.btn-primary:disabled {
+    background-color: #71869e;
+    cursor: not-allowed;
+}
+
+/* Mensajes */
+
+#mensajeLogin {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* Separador y seguridad */
+
+.separador-login {
+    border-top: 1px solid #e5eaf0;
+    margin: 25px 0 18px;
+}
+
+.texto-seguridad {
+    color: #788596;
+    font-size: 12px;
+    margin: 0;
+}
+
+.texto-seguridad i {
+    color: #1d568c;
+    margin-right: 5px;
+}
+
+/* Footer */
+
+footer {
+    background-color: #17365d;
+    text-align: center;
+    padding: 22px 15px;
+    margin-top: auto;
+}
+
+footer p {
+    color: white;
+    margin: 5px;
+    font-size: 14px;
+}
