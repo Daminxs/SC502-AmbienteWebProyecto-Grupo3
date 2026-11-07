@@ -1,0 +1,158 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+header {
+    background-color: #8b0000;
+    padding: 30px;
+    text-align: center;
+    width: 100%;
+    z-index: 1000;
+}
+
+header p {
+    color: white;
+}
+
+#titulo {
+    color: white;
+    text-align: center;
+}
+
+nav {
+    background-color: #333;
+    padding: 15px;
+    width: 100%;
+    z-index: 1000;
+}
+
+nav a {
+    color: white !important;
+    text-decoration: none;
+    padding: 10px 20px;
+}
+
+nav a:hover {
+    background-color: #8b0000;
+    border-radius: 5px;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #8b0000;
+    border-radius: 5px;
+}
+
+main {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+section {
+    background-color: white;
+    padding: 30px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    scroll-margin-top: 210px;
+}
+
+p {
+    color: gray;
+}
+
+h2 {
+    color: #8b0000;
+    margin-bottom: 20px;
+}
+
+h5 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.numero {
+    color: #8b0000;
+    font-weight: bold;
+    margin: 0;
+}
+
+.card {
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+    color: #8b0000;
+    font-weight: bold;
+}
+
+.card ul {
+    padding-left: 18px;
+    color: gray;
+    font-size: 14px;
+}
+
+.card .rol-cantidad {
+    color: #8b0000;
+    font-weight: bold;
+}
+
+input[type] {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #8b0000;
+}
+
+label {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.btn.btn-primary {
+    background-color: #8b0000;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn.btn-primary:hover {
+    background-color: #600000;
+}
+
+.btn-sm {
+    margin-right: 4px;
+}
+
+footer {
+    background-color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+footer p {
+    color: white;
+    margin: 5px;
+}
