@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Calificaciones | Campus Virtual</title>
+
+    <link rel="stylesheet" href="../css/panel.css">
+
+    <!-- Datos de entregas compartidos entre pantallas -->
+    <script src="../js/entregas-demo.js" defer></script>
+
+    <!-- Lo crearemos en el siguiente paso de JavaScript -->
+    <script src="../js/calificaciones.js" defer></script>
+</head>
+
+<body>
+
+    <a class="saltar-contenido" href="#contenido">
+        Saltar al contenido
+    </a>
+
+    <!-- Navegación lateral -->
+    <aside class="menu-lateral" id="menuLateral">
+
+        <a class="marca" href="estudiante.html">
+            <span class="marca-icono" aria-hidden="true">C</span>
+
+            <span>
+                Campus Virtual
+                <small>Espacio del estudiante</small>
+            </span>
+        </a>
+
+        <p class="menu-etiqueta">MI ESPACIO</p>
+
+        <nav class="navegacion" aria-label="Navegación del estudiante">
+
+            <a class="enlace-menu" href="estudiante.html#resumen">
+                <span aria-hidden="true">01</span>
+                Resumen
+            </a>
+
+            <a class="enlace-menu" href="estudiante.html#cursos">
+                <span aria-hidden="true">02</span>
+                Mis cursos
+            </a>
+
+            <a class="enlace-menu" href="estudiante.html#actividades">
+                <span aria-hidden="true">03</span>
+                Próximas actividades
+            </a>
+
+            <a class="enlace-menu" href="estudiante.html#avisos">
+                <span aria-hidden="true">04</span>
+                Avisos recientes
+            </a>
+
+            <a
+                class="enlace-menu activo"
+                href="calificaciones.html"
+                aria-current="page">
+                <span aria-hidden="true">05</span>
+                Calificaciones
+            </a>
+
+        </nav>
+
+        <div class="menu-inferior">
+            <p class="indicador-demo">Vista de demostración</p>
+
+            <p>Organiza tu presente.<br>Construye tu futuro.</p>
+
+            <a class="enlace-volver" href="index.html">
+                Volver al acceso
+                <span aria-hidden="true">↗</span>
+            </a>
+        </div>
+
+    </aside>
+
+    <div class="area-principal">
+
+        <!-- Encabezado -->
+        <header class="barra-superior">
+
+            <div class="barra-izquierda">
+
+                <button
+                    class="boton-menu"
+                    id="btnMenu"
+                    type="button"
+                    aria-label="Abrir menú"
+                    aria-controls="menuLateral"
+                    aria-expanded="false">
+                    ☰
+                </button>
+
+                <span class="ubicacion">
+                    Mi espacio / Calificaciones
+                </span>
+
+            </div>
+
+            <div class="usuario">
+                <span class="avatar" aria-hidden="true">AM</span>
+
+                <div>
+                    <strong>Alex Mora</strong>
+                    <small>Estudiante · Cuenta de ejemplo</small>
+                </div>
+            </div>
+
+        </header>
+
+        <main id="contenido" tabindex="-1">
+
+            <a class="aula-volver" href="estudiante.html">
+                ← Volver al panel
+            </a>
+
+            <!-- Presentación -->
+            <section class="seccion">
+
+                <div class="encabezado-pagina">
+
+                    <div>
+                        <p class="sobrelinea">TU AVANCE ACADÉMICO</p>
+
+                        <h1>Calificaciones y progreso</h1>
+
+                        <p class="texto-secundario">
+                            Consulta tus resultados, revisa la
+                            retroalimentación y sigue tu avance.
+                        </p>
+                    </div>
+
+                    <span class="etiqueta">Datos de ejemplo</span>
+
+                </div>
+
+                <div class="banner-bienvenida">
+                    <div>
+                        <span class="etiqueta-clara">
+                            Cada actividad cuenta
+                        </span>
+
+                        <h2>Comprende tus resultados.</h2>
+
+                        <p>
+                            El progreso muestra las actividades entregadas.
+                            Las calificaciones corresponden únicamente
+                            a los trabajos evaluados.
+                        </p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Selección del curso -->
+            <section class="seccion" aria-labelledby="tituloSeleccion">
+
+                <div class="encabezado-seccion">
+
+                    <div>
+                        <p class="sobrelinea">CONSULTA POR ASIGNATURA</p>
+                        <h2 id="tituloSeleccion">Selecciona un curso</h2>
+                    </div>
+
+                    <div class="filtro">
+                        <label for="filtroCurso">Curso</label>
+
+                        <select
+                            id="filtroCurso"
+                            aria-controls="resultadosCurso"
+                            disabled>
+                            <option value="">Cargando cursos...</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <p class="texto-secundario" id="descripcionCalificaciones">
+                    Las notas y ponderaciones son de demostración.
+                    Las nuevas entregas simuladas no reciben una
+                    calificación automática.
+                </p>
+
+            </section>
+
+            <!-- Resultados del curso seleccionado -->
+            <div id="resultadosCurso" hidden>
+
+                <section
+                    class="seccion"
+                    aria-labelledby="nombreCursoNotas">
+
+                    <div class="encabezado-seccion">
+
+                        <div>
+                            <p class="sobrelinea" id="codigoCursoNotas"></p>
+                            <h2 id="nombreCursoNotas"></h2>
+                        </div>
+
+                        <a class="boton-enlace" id="enlaceAula" href="estudiante.html#cursos">
+                            Ir al aula →
+                        </a>
+
+                    </div>
+
+                    <p class="texto-secundario" id="docenteCursoNotas"></p>
+
+                    <!-- Resumen de calificaciones -->
+                    <div class="indicadores">
+
+                        <article class="tarjeta-indicador">
+                            <span class="indicador-nombre">
+                                Promedio de lo evaluado
+                            </span>
+
+                            <strong id="promedioEvaluado">—</strong>
+
+                            <span class="texto-secundario">
+                                Sobre 100 · No es la nota final
+                            </span>
+                        </article>
+
+                        <article class="tarjeta-indicador">
+                            <span class="indicador-nombre">
+                                Puntos acumulados
+                            </span>
+
+                            <strong id="puntosAcumulados">—</strong>
+
+                            <span class="texto-secundario">
+                                Aporte a la nota final sobre 100
+                            </span>
+                        </article>
+
+                        <article class="tarjeta-indicador">
+                            <span class="indicador-nombre">
+                                Ponderación evaluada
+                            </span>
+
+                            <strong id="ponderacionEvaluada">—</strong>
+
+                            <span class="texto-secundario">
+                                Porcentaje del curso ya calificado
+                            </span>
+                        </article>
+
+                    </div>
+
+                    <p
+                        class="notas-aclaracion"
+                        id="aclaracionPromedio">
+                    </p>
+
+                </section>
+
+                <!-- Avance de entregas -->
+                <section
+                    class="seccion notas-progreso"
+                    aria-labelledby="tituloProgreso">
+
+                    <div class="encabezado-seccion">
+
+                        <div>
+                            <p class="sobrelinea">SEGUIMIENTO DE ENTREGAS</p>
+                            <h2 id="tituloProgreso">Progreso del curso</h2>
+                        </div>
+
+                        <strong id="porcentajeProgreso">0%</strong>
+
+                    </div>
+
+                    <label class="solo-lectores" for="barraProgreso">
+                        Porcentaje de actividades entregadas
+                    </label>
+
+                    <progress id="barraProgreso" value="0" max="100">
+                        0%
+                    </progress>
+
+                    <p
+                        class="texto-secundario"
+                        id="descripcionProgreso">
+                    </p>
+
+                    <div class="notas-estados">
+
+                        <span>
+                            Pendientes:
+                            <strong id="cantidadPendientes">0</strong>
+                        </span>
+
+                        <span>
+                            Por calificar:
+                            <strong id="cantidadPorCalificar">0</strong>
+                        </span>
+
+                        <span>
+                            Calificadas:
+                            <strong id="cantidadCalificadas">0</strong>
+                        </span>
+
+                    </div>
+
+                </section>
+
+                <!-- Desglose -->
+                <section
+                    class="seccion"
+                    aria-labelledby="tituloDesglose">
+
+                    <div class="encabezado-seccion">
+                        <div>
+                            <p class="sobrelinea">RESULTADOS POR ACTIVIDAD</p>
+                            <h2 id="tituloDesglose">
+                                Desglose de calificaciones
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="tabla-contenedor">
+
+                        <table>
+                            <caption class="solo-lectores">
+                                Actividades, ponderaciones, notas y
+                                aportes a la calificación del curso
+                            </caption>
+
+                            <thead>
+                                <tr>
+                                    <th scope="col">Actividad</th>
+                                    <th scope="col">Ponderación</th>
+                                    <th scope="col">Nota / 100</th>
+                                    <th scope="col">Puntos aportados</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Detalle</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tablaCalificaciones"></tbody>
+
+                        </table>
+
+                    </div>
+
+                    <p
+                        class="mensaje-vacio"
+                        id="sinCalificaciones"
+                        hidden>
+                        Este curso todavía no tiene actividades
+                        configuradas para evaluación.
+                    </p>
+
+                    <p class="notas-aclaracion">
+                        Los puntos aportados se calculan multiplicando
+                        la nota por la ponderación y dividiendo entre 100.
+                        Una actividad sin calificar se muestra con
+                        un guion, no con una nota de cero.
+                    </p>
+
+                </section>
+
+                <!-- Retroalimentación -->
+                <section
+                    class="seccion"
+                    aria-labelledby="tituloRetroalimentacion">
+
+                    <div class="encabezado-seccion">
+                        <div>
+                            <p class="sobrelinea">APRENDE DE TUS RESULTADOS</p>
+                            <h2 id="tituloRetroalimentacion">
+                                Retroalimentación del docente
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div
+                        class="notas-retroalimentacion"
+                        id="listaRetroalimentacion">
+                    </div>
+
+                    <p
+                        class="mensaje-vacio"
+                        id="sinRetroalimentacion"
+                        hidden>
+                        Todavía no hay retroalimentación publicada
+                        para este curso.
+                    </p>
+
+                </section>
+
+            </div>
+
+            <noscript>
+                <p class="mensaje-vacio">
+                    Activa JavaScript para consultar los datos
+                    de demostración.
+                </p>
+            </noscript>
+
+        </main>
+
+        <footer class="pie-pagina">
+            <span>Campus Virtual Universitario</span>
+            <span>Proyecto académico · Grupo 3</span>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>

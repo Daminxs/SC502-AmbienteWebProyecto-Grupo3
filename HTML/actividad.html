@@ -54,6 +54,10 @@
                 <span aria-hidden="true">04</span>
                 Avisos recientes
             </a>
+            <a class="enlace-menu" href="calificaciones.html">
+                <span aria-hidden="true">05</span>
+                Calificaciones
+            </a>
 
         </nav>
 
@@ -76,13 +80,8 @@
 
             <div class="barra-izquierda">
 
-                <button
-                    class="boton-menu"
-                    id="btnMenu"
-                    type="button"
-                    aria-label="Abrir menú"
-                    aria-controls="menuLateral"
-                    aria-expanded="false">
+                <button class="boton-menu" id="btnMenu" type="button" aria-label="Abrir menú"
+                    aria-controls="menuLateral" aria-expanded="false">
                     ☰
                 </button>
 
@@ -103,10 +102,7 @@
 
         <main id="contenido" tabindex="-1">
 
-            <a
-                class="aula-volver"
-                id="volverCurso"
-                href="estudiante.html#actividades">
+            <a class="aula-volver" id="volverCurso" href="estudiante.html#actividades">
                 ← Volver a las actividades
             </a>
 
@@ -121,9 +117,7 @@
 
                     <div class="encabezado-pagina">
                         <div>
-                            <p
-                                class="sobrelinea"
-                                id="nombreCursoActividad">
+                            <p class="sobrelinea" id="nombreCursoActividad">
                             </p>
 
                             <h1 id="tituloActividad"></h1>
@@ -189,26 +183,16 @@
                         <p class="sobrelinea">TU TRABAJO</p>
                         <h2>Entrega de la actividad</h2>
 
-                        <p
-                            id="avisoPlazo"
-                            class="entrega-aviso"
-                            hidden>
+                        <p id="avisoPlazo" class="entrega-aviso" hidden>
                             La fecha límite venció. La entrega simulada
                             se registrará como tardía.
                         </p>
 
                         <!-- Resumen de una entrega existente -->
-                        <div
-                            id="resumenEntrega"
-                            aria-live="polite"
-                            hidden>
+                        <div id="resumenEntrega" aria-live="polite" hidden>
                         </div>
 
-                        <button
-                            class="boton entrega-boton-secundario"
-                            id="btnEditarEntrega"
-                            type="button"
-                            hidden>
+                        <button class="boton entrega-boton-secundario" id="btnEditarEntrega" type="button" hidden>
                             Reemplazar entrega simulada
                         </button>
 
@@ -219,27 +203,17 @@
                                 Archivos del trabajo
                             </label>
 
-                            <input
-                                id="archivosEntrega"
-                                name="archivos"
-                                type="file"
+                            <input id="archivosEntrega" name="archivos" type="file"
                                 accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.txt,.png,.jpg,.jpeg"
-                                aria-describedby="ayudaArchivos"
-                                multiple
-                                required>
+                                aria-describedby="ayudaArchivos" multiple required>
 
-                            <p
-                                class="texto-secundario entrega-ayuda"
-                                id="ayudaArchivos">
+                            <p class="texto-secundario entrega-ayuda" id="ayudaArchivos">
                                 Hasta 5 archivos, 10 MB por archivo y 25 MB
                                 en total. Formatos: PDF, Word, PowerPoint,
                                 Excel, ZIP, TXT, PNG y JPG.
                             </p>
 
-                            <ul
-                                class="entrega-archivos"
-                                id="listaArchivos"
-                                aria-live="polite">
+                            <ul class="entrega-archivos" id="listaArchivos" aria-live="polite">
                             </ul>
 
                             <label for="comentarioEntrega">
@@ -247,11 +221,7 @@
                                 <span class="texto-secundario">(opcional)</span>
                             </label>
 
-                            <textarea
-                                id="comentarioEntrega"
-                                name="comentario"
-                                rows="5"
-                                maxlength="1000"
+                            <textarea id="comentarioEntrega" name="comentario" rows="5" maxlength="1000"
                                 placeholder="Agrega una aclaración sobre tu trabajo.">
                             </textarea>
 
@@ -259,26 +229,16 @@
                                 Máximo 1000 caracteres.
                             </p>
 
-                            <p
-                                class="entrega-error"
-                                id="errorEntrega"
-                                role="alert"
-                                hidden>
+                            <p class="entrega-error" id="errorEntrega" role="alert" hidden>
                             </p>
 
                             <div class="entrega-acciones">
 
-                                <button
-                                    class="boton entrega-boton-principal"
-                                    id="btnRevisarEntrega"
-                                    type="submit">
+                                <button class="boton entrega-boton-principal" id="btnRevisarEntrega" type="submit">
                                     Revisar entrega
                                 </button>
 
-                                <button
-                                    class="boton entrega-boton-secundario"
-                                    id="btnCancelarEdicion"
-                                    type="button"
+                                <button class="boton entrega-boton-secundario" id="btnCancelarEdicion" type="button"
                                     hidden>
                                     Cancelar
                                 </button>
@@ -303,19 +263,12 @@
     </div>
 
     <!-- Confirmación antes de registrar -->
-    <dialog
-        class="ventana-detalle"
-        id="confirmacionEntrega"
-        aria-labelledby="tituloConfirmacion">
+    <dialog class="ventana-detalle" id="confirmacionEntrega" aria-labelledby="tituloConfirmacion">
 
         <div class="encabezado-modal">
             <h2 id="tituloConfirmacion">Revisar entrega</h2>
 
-            <button
-                class="boton-cerrar"
-                id="btnCerrarConfirmacion"
-                type="button"
-                aria-label="Cerrar confirmación">
+            <button class="boton-cerrar" id="btnCerrarConfirmacion" type="button" aria-label="Cerrar confirmación">
                 ✕
             </button>
         </div>
@@ -327,10 +280,7 @@
             y fecha de esta entrega de prueba. No se subirán archivos.
         </p>
 
-        <button
-            class="boton entrega-boton-principal"
-            id="btnConfirmarEntrega"
-            type="button">
+        <button class="boton entrega-boton-principal" id="btnConfirmarEntrega" type="button">
             Confirmar entrega simulada
         </button>
 
