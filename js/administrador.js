@@ -4,17 +4,22 @@
    CAMPUS VIRTUAL - PANEL ADMINISTRADOR
    ========================================= */
 
-console.log("Panel de administración del Campus Virtual");
-
 // ==========================================
 // 1. CONFIGURACIÓN DE LAS API
 // ==========================================
 
+// API de usuarios.
 const API_LISTAR_USUARIOS = "/api/listar_usuarios.php";
 const API_CREAR_USUARIO = "/api/crear_usuario.php";
 const API_EDITAR_USUARIO = "/api/editar_usuario.php";
 const API_CAMBIAR_ESTADO = "/api/cambiar_estado_usuario.php";
 const API_ELIMINAR_USUARIO = "/api/eliminar_usuario.php";
+
+// API de cursos.
+const API_LISTAR_CURSOS = "/api/listar_cursos.php";
+const API_CREAR_CURSO = "/api/crear_curso.php";
+const API_EDITAR_CURSO = "/api/editar_curso.php";
+const API_ELIMINAR_CURSO = "/api/eliminar_curso.php";
 
 // ==========================================
 // 2. ROLES DEL SISTEMA
@@ -48,76 +53,38 @@ const roles = [
 ];
 
 // ==========================================
-// 3. PERÍODOS ACADÉMICOS
+// 3. VARIABLES DEL SISTEMA
 // ==========================================
 
-const periodos = [
-    "I Cuatrimestre 2026",
-    "II Cuatrimestre 2026",
-    "III Cuatrimestre 2026"
-];
-
-// ==========================================
-// 4. USUARIOS - MYSQL
-// ==========================================
-
+// Usuarios reales de MySQL.
 let usuarios = [];
 
-let cargandoUsuarios = true;
-let errorUsuarios = "";
+// Cursos reales de MySQL.
+let cursos = [];
 
+// Estados de carga.
+let cargandoUsuarios = true;
+let cargandoCursos = true;
+
+// Mensajes de error.
+let errorUsuarios = "";
+let errorCursos = "";
+
+// Evitar operaciones duplicadas.
 let cambiandoEstadoUsuario = false;
 let eliminandoUsuario = false;
+let eliminandoCurso = false;
 
 // ==========================================
-// 5. CURSOS - DATOS TEMPORALES
+// 4. FUNCIONES GENERALES
 // ==========================================
 
-// Pendiente de conectar la gestión de cursos
-// con MySQL. No modificar estos datos reales
-// desde las funciones de demostración.
-
-let cursos = [
-    {
-        id: 1,
-        codigo: "SC502",
-        nombre: "Ambiente Web Cliente Servidor",
-        docenteId: 2,
-        periodo: "III Cuatrimestre 2026",
-        matriculados: 28,
-        activo: true
-    },
-    {
-        id: 2,
-        codigo: "SC504",
-        nombre: "Lenguaje de Base de Datos",
-        docenteId: 3,
-        periodo: "III Cuatrimestre 2026",
-        matriculados: 24,
-        activo: true
-    },
-    {
-        id: 3,
-        codigo: "SC301",
-        nombre: "Programación II",
-        docenteId: 2,
-        periodo: "II Cuatrimestre 2026",
-        matriculados: 30,
-        activo: false
-    }
-];
-
-let siguienteId = 100;
-
-// ==========================================
-// 6. FUNCIONES GENERALES
-// ==========================================
-
+// Obtener elemento por ID.
 function elemento(id) {
     return document.getElementById(id);
 }
 
-// Escapar datos antes de insertarlos en HTML.
+// Escapar contenido antes de agregarlo al HTML.
 function escapar(texto) {
 
     return String(texto ?? "")
@@ -128,7 +95,7 @@ function escapar(texto) {
         .replace(/'/g, "&#39;");
 }
 
-// Obtener nombre completo.
+// Obtener el nombre completo.
 function nombreCompleto(usuario) {
 
     return `${usuario.nombre} ${usuario.apellidos}`.trim();
@@ -142,7 +109,7 @@ function buscarUsuario(id) {
     ) || null;
 }
 
-// Buscar curso temporal por ID.
+// Buscar curso por ID.
 function buscarCurso(id) {
 
     return cursos.find(
@@ -151,26 +118,59 @@ function buscarCurso(id) {
 }
 
 // Contar usuarios por rol.
-function contarPorRol(nombreRol) {
+function contarPorRol(rol) {
 
     return usuarios.filter(
-        usuario => usuario.rol === nombreRol
+        usuario => usuario.rol === rol
     ).length;
 }
 
-// Mostrar estado.
+// Mostrar estado en una insignia.
 function insigniaEstado(activo) {
 
-    if (activo) {
+    return activo
+        ? '<span class="badge bg-success">Activo</span>'
+        : '<span class="badge bg-secondary">Inactivo</span>';
+}
 
-        return '<span class="badge bg-success">Activo</span>';
+// Cerrar un modal Bootstrap.
+function cerrarModal(id) {
+
+    const modal = elemento(id);
+
+    if (!modal) {
+        return;
     }
 
-    return '<span class="badge bg-secondary">Inactivo</span>';
+    if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
+
+    bootstrap.Modal.getOrCreateInstance(
+        modal
+    ).hide();
 }
 
 // ==========================================
-// 7. SOLICITUDES A LAS API PHP
+// 5. PREPARAR SOLICITUDES POST
+// ==========================================
+
+function opcionesPOST(datos) {
+
+    return {
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+        },
+
+        body: JSON.stringify(datos)
+    };
+}
+
+// ==========================================
+// 6. COMUNICACIÓN CON LAS API PHP
 // ==========================================
 
 async function solicitarAPI(url, opciones = {}) {
@@ -191,7 +191,7 @@ async function solicitarAPI(url, opciones = {}) {
         body: opciones.body
     });
 
-    // Sesión vencida o cuenta desactivada.
+    // Verificar sesión.
     if (respuesta.status === 401) {
 
         window.location.href = "/HTML/index.html";
@@ -209,16 +209,16 @@ async function solicitarAPI(url, opciones = {}) {
     } catch (error) {
 
         throw new Error(
-            "El servidor PHP no devolvió una respuesta JSON válida."
+            "El servidor no devolvió una respuesta JSON válida."
         );
     }
 
-    // Verificar resultado.
+    // Comprobar resultado.
     if (!respuesta.ok || datos.success !== true) {
 
         throw new Error(
             datos.mensaje ||
-            `Error del servidor: ${respuesta.status}`
+            `Error HTTP ${respuesta.status}`
         );
     }
 
@@ -226,7 +226,7 @@ async function solicitarAPI(url, opciones = {}) {
 }
 
 // ==========================================
-// 8. CARGAR USUARIOS DESDE MYSQL
+// 7. CARGAR USUARIOS DESDE MYSQL
 // ==========================================
 
 async function cargarUsuariosDesdeMySQL() {
@@ -249,32 +249,22 @@ async function cargarUsuariosDesdeMySQL() {
         if (!Array.isArray(datos.usuarios)) {
 
             throw new Error(
-                "La lista de usuarios no es válida."
+                "La respuesta de usuarios no es válida."
             );
         }
 
-        // Convertir registros de MySQL.
         usuarios = datos.usuarios.map(function (usuario) {
 
             return {
-
                 id: Number(usuario.id),
 
-                nombre: String(
-                    usuario.nombre ?? ""
-                ),
+                nombre: String(usuario.nombre ?? ""),
 
-                apellidos: String(
-                    usuario.apellidos ?? ""
-                ),
+                apellidos: String(usuario.apellidos ?? ""),
 
-                correo: String(
-                    usuario.correo ?? ""
-                ),
+                correo: String(usuario.correo ?? ""),
 
-                rol: String(
-                    usuario.rol ?? ""
-                ),
+                rol: String(usuario.rol ?? ""),
 
                 activo:
                     usuario.activo === true ||
@@ -284,17 +274,12 @@ async function cargarUsuariosDesdeMySQL() {
             };
         });
 
-        console.log(
-            "Usuarios cargados desde MySQL:",
-            usuarios.length
-        );
-
         return true;
 
     } catch (error) {
 
         console.error(
-            "Error al consultar usuarios:",
+            "Error al cargar usuarios:",
             error
         );
 
@@ -312,86 +297,108 @@ async function cargarUsuariosDesdeMySQL() {
 }
 
 // ==========================================
+// 8. CARGAR CURSOS DESDE MYSQL
+// ==========================================
+
+async function cargarCursosDesdeMySQL() {
+
+    cargandoCursos = true;
+    errorCursos = "";
+
+    actualizarTodo();
+
+    try {
+
+        const datos = await solicitarAPI(
+            API_LISTAR_CURSOS
+        );
+
+        if (!datos) {
+            return false;
+        }
+
+        if (!Array.isArray(datos.cursos)) {
+
+            throw new Error(
+                "La respuesta de cursos no es válida."
+            );
+        }
+
+        cursos = datos.cursos.map(function (curso) {
+
+            return {
+                id: Number(curso.id),
+
+                codigo: String(curso.codigo ?? ""),
+
+                nombre: String(curso.nombre ?? ""),
+
+                descripcion: String(
+                    curso.descripcion ?? ""
+                ),
+
+                creditos: Number(curso.creditos),
+
+                activo:
+                    curso.activo === true ||
+                    curso.activo === 1 ||
+                    curso.activo === "1" ||
+                    curso.activo === "true"
+            };
+        });
+
+        console.log(
+            "Cursos cargados desde MySQL:",
+            cursos.length
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar cursos:",
+            error
+        );
+
+        cursos = [];
+        errorCursos = error.message;
+
+        return false;
+
+    } finally {
+
+        cargandoCursos = false;
+
+        actualizarTodo();
+    }
+}
+
+// ==========================================
 // 9. CARGAR OPCIONES DE ROLES
 // ==========================================
 
 function cargarOpcionesRol() {
 
-    const selectRol = elemento("rolUsuario");
+    const select = elemento("rolUsuario");
 
-    if (!selectRol) {
+    if (!select) {
         return;
     }
 
-    selectRol.innerHTML = "";
+    select.innerHTML = roles.map(function (rol) {
 
-    for (const rol of roles) {
-
-        selectRol.innerHTML += `
+        return `
             <option value="${escapar(rol.nombre)}">
                 ${escapar(rol.nombre)}
             </option>
         `;
-    }
+
+    }).join("");
 }
 
 // ==========================================
-// 10. CARGAR PERÍODOS
-// ==========================================
-
-function cargarOpcionesPeriodo() {
-
-    const selectPeriodo = elemento("periodoCurso");
-
-    if (!selectPeriodo) {
-        return;
-    }
-
-    selectPeriodo.innerHTML = "";
-
-    for (const periodo of periodos) {
-
-        selectPeriodo.innerHTML += `
-            <option value="${escapar(periodo)}">
-                ${escapar(periodo)}
-            </option>
-        `;
-    }
-}
-
-// ==========================================
-// 11. CARGAR DOCENTES
-// ==========================================
-
-function cargarOpcionesDocente() {
-
-    const selectDocente = elemento("docenteCurso");
-
-    if (!selectDocente) {
-        return;
-    }
-
-    selectDocente.innerHTML =
-        '<option value="0">Sin asignar</option>';
-
-    for (const usuario of usuarios) {
-
-        if (
-            usuario.rol === "Docente" &&
-            usuario.activo
-        ) {
-
-            selectDocente.innerHTML += `
-                <option value="${usuario.id}">
-                    ${escapar(nombreCompleto(usuario))}
-                </option>
-            `;
-        }
-    }
-}
-
-// ==========================================
-// 12. ACTUALIZAR PANEL
+// 10. ACTUALIZAR PANEL
 // ==========================================
 
 function actualizarTodo() {
@@ -406,41 +413,30 @@ function actualizarTodo() {
 }
 
 // ==========================================
-// 13. RESUMEN DEL CAMPUS
+// 11. MOSTRAR RESUMEN
 // ==========================================
 
 function mostrarResumen() {
 
-    const cursosActivos = cursos.filter(
-        curso => curso.activo
-    ).length;
+    const indicadores = {
 
-    // Total de usuarios.
-    if (elemento("totalUsuarios")) {
+        totalUsuarios: usuarios.length,
 
-        elemento("totalUsuarios").textContent =
-            usuarios.length;
-    }
+        totalEstudiantes: contarPorRol("Estudiante"),
 
-    // Total de estudiantes.
-    if (elemento("totalEstudiantes")) {
+        totalDocentes: contarPorRol("Docente"),
 
-        elemento("totalEstudiantes").textContent =
-            contarPorRol("Estudiante");
-    }
+        totalCursos: cursos.filter(
+            curso => curso.activo
+        ).length
+    };
 
-    // Total de docentes.
-    if (elemento("totalDocentes")) {
+    for (const [id, valor] of Object.entries(indicadores)) {
 
-        elemento("totalDocentes").textContent =
-            contarPorRol("Docente");
-    }
+        if (elemento(id)) {
 
-    // Total de cursos activos de demostración.
-    if (elemento("totalCursos")) {
-
-        elemento("totalCursos").textContent =
-            cursosActivos;
+            elemento(id).textContent = valor;
+        }
     }
 
     const lista = elemento("listaRecientes");
@@ -449,8 +445,7 @@ function mostrarResumen() {
         return;
     }
 
-    lista.innerHTML = "";
-
+    // Cargando usuarios.
     if (cargandoUsuarios) {
 
         lista.innerHTML = `
@@ -462,6 +457,7 @@ function mostrarResumen() {
         return;
     }
 
+    // Error de consulta.
     if (errorUsuarios) {
 
         lista.innerHTML = `
@@ -473,6 +469,7 @@ function mostrarResumen() {
         return;
     }
 
+    // Sin usuarios.
     if (usuarios.length === 0) {
 
         lista.innerHTML = `
@@ -484,12 +481,12 @@ function mostrarResumen() {
         return;
     }
 
-    // Últimos cuatro usuarios registrados.
+    // Mostrar los últimos cuatro.
     const recientes = usuarios.slice(-4).reverse();
 
-    for (const usuario of recientes) {
+    lista.innerHTML = recientes.map(function (usuario) {
 
-        lista.innerHTML += `
+        return `
             <li class="list-group-item
                        d-flex justify-content-between
                        align-items-center">
@@ -506,11 +503,12 @@ function mostrarResumen() {
 
             </li>
         `;
-    }
+
+    }).join("");
 }
 
 // ==========================================
-// 14. MOSTRAR USUARIOS
+// 12. MOSTRAR USUARIOS
 // ==========================================
 
 function mostrarUsuarios() {
@@ -521,26 +519,19 @@ function mostrarUsuarios() {
         return;
     }
 
-    if (cargandoUsuarios) {
-
-        tabla.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center">
-                    Cargando usuarios desde MySQL...
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    if (errorUsuarios) {
+    // Cargando o con error.
+    if (cargandoUsuarios || errorUsuarios) {
 
         tabla.innerHTML = `
             <tr>
                 <td colspan="5"
-                    class="text-center text-danger">
-                    ${escapar(errorUsuarios)}
+                    class="text-center ${errorUsuarios ? "text-danger" : ""}">
+
+                    ${escapar(
+                        errorUsuarios ||
+                        "Cargando usuarios desde MySQL..."
+                    )}
+
                 </td>
             </tr>
         `;
@@ -548,7 +539,7 @@ function mostrarUsuarios() {
         return;
     }
 
-    // Buscar por nombre y correo.
+    // Buscar usuarios.
     const texto = (
         elemento("buscarUsuario")?.value || ""
     ).trim().toLowerCase();
@@ -556,31 +547,42 @@ function mostrarUsuarios() {
     // Filtrar por rol.
     const filtro = elemento("filtroRol")?.value || "";
 
-    let filas = "";
+    const filtrados = usuarios.filter(function (usuario) {
 
-    for (const usuario of usuarios) {
-
-        const datos = (
+        const contenido = (
             nombreCompleto(usuario) +
             " " +
             usuario.correo
         ).toLowerCase();
 
-        const coincideBusqueda = datos.includes(texto);
+        return (
+            contenido.includes(texto) &&
+            (!filtro || usuario.rol === filtro)
+        );
+    });
 
-        const coincideRol =
-            filtro === "" ||
-            usuario.rol === filtro;
+    // Sin coincidencias.
+    if (filtrados.length === 0) {
 
-        if (!coincideBusqueda || !coincideRol) {
-            continue;
-        }
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center">
+                    No hay usuarios que coincidan con la búsqueda.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    // Mostrar usuarios.
+    tabla.innerHTML = filtrados.map(function (usuario) {
 
         const textoEstado = usuario.activo
             ? "Desactivar"
             : "Activar";
 
-        filas += `
+        return `
             <tr>
 
                 <td>
@@ -634,593 +636,12 @@ function mostrarUsuarios() {
 
             </tr>
         `;
-    }
 
-    if (filas === "") {
-
-        filas = `
-            <tr>
-                <td colspan="5" class="text-center">
-                    No hay usuarios que coincidan
-                    con la búsqueda.
-                </td>
-            </tr>
-        `;
-    }
-
-    tabla.innerHTML = filas;
+    }).join("");
 }
 
 // ==========================================
-// 15. ABRIR MODAL DE NUEVO USUARIO
-// ==========================================
-
-function abrirModalNuevoUsuario() {
-
-    const formulario = elemento("formUsuario");
-
-    const modal = elemento("modalUsuario");
-
-    if (!formulario || !modal) {
-
-        console.error(
-            "No se encontró el formulario de usuarios."
-        );
-
-        return;
-    }
-
-    formulario.reset();
-
-    // Vaciar el ID para indicar registro nuevo.
-    elemento("idUsuario").value = "";
-
-    elemento("tituloModalUsuario").textContent =
-        "Nuevo usuario";
-
-    cargarOpcionesRol();
-
-    // Contraseña obligatoria para crear.
-    const campoPassword = elemento("passwordUsuario");
-
-    campoPassword.value = "";
-    campoPassword.required = true;
-
-    campoPassword.placeholder = "Mínimo 8 caracteres";
-
-    bootstrap.Modal.getOrCreateInstance(
-        modal
-    ).show();
-}
-
-// ==========================================
-// 16. ABRIR MODAL DE EDITAR USUARIO
-// ==========================================
-
-function abrirModalEditarUsuario(id) {
-
-    const usuario = buscarUsuario(id);
-
-    if (!usuario) {
-
-        alert("No se encontró el usuario.");
-        return;
-    }
-
-    const formulario = elemento("formUsuario");
-
-    const modal = elemento("modalUsuario");
-
-    if (!formulario || !modal) {
-
-        alert("No se encontró el formulario.");
-        return;
-    }
-
-    formulario.reset();
-
-    // Registrar ID del usuario seleccionado.
-    elemento("idUsuario").value = usuario.id;
-
-    // Mostrar los datos actuales.
-    elemento("nombreUsuario").value = usuario.nombre;
-
-    elemento("apellidosUsuario").value =
-        usuario.apellidos;
-
-    elemento("correoUsuario").value = usuario.correo;
-
-    cargarOpcionesRol();
-
-    elemento("rolUsuario").value = usuario.rol;
-
-    // Contraseña opcional al editar.
-    const campoPassword = elemento("passwordUsuario");
-
-    campoPassword.value = "";
-    campoPassword.required = false;
-
-    campoPassword.placeholder =
-        "Dejar en blanco para conservar la contraseña";
-
-    elemento("tituloModalUsuario").textContent =
-        "Editar usuario";
-
-    bootstrap.Modal.getOrCreateInstance(
-        modal
-    ).show();
-}
-
-// ==========================================
-// 17. VALIDAR CONTRASEÑA
-// ==========================================
-
-function validarPassword(password, obligatorio) {
-
-    // Al editar, una contraseña vacía
-    // significa conservar la anterior.
-    if (!obligatorio && password === "") {
-        return true;
-    }
-
-    const longitud = new TextEncoder()
-        .encode(password).length;
-
-    if (longitud < 8 || longitud > 72) {
-
-        alert(
-            "La contraseña debe tener entre 8 y 72 bytes."
-        );
-
-        return false;
-    }
-
-    return true;
-}
-
-// ==========================================
-// 18. CREAR Y EDITAR USUARIOS EN MYSQL
-// ==========================================
-
-async function guardarUsuario(event) {
-
-    event.preventDefault();
-
-    const formulario = elemento("formUsuario");
-
-    const botonGuardar = elemento("btnGuardarUsuario");
-
-    if (!formulario || !botonGuardar) {
-        return;
-    }
-
-    // Determinar si es creación o edición.
-    const id = elemento("idUsuario").value.trim();
-
-    const esEdicion = id !== "";
-
-    // Obtener datos del formulario.
-    const nombre = elemento("nombreUsuario")
-        .value.trim();
-
-    const apellidos = elemento("apellidosUsuario")
-        .value.trim();
-
-    const correo = elemento("correoUsuario")
-        .value.trim();
-
-    const password = elemento("passwordUsuario").value;
-
-    const rol = elemento("rolUsuario").value;
-
-    // Validar formulario.
-    if (!formulario.reportValidity()) {
-        return;
-    }
-
-    if (
-        nombre === "" ||
-        apellidos === "" ||
-        correo === "" ||
-        rol === ""
-    ) {
-
-        alert("Complete todos los campos obligatorios.");
-        return;
-    }
-
-    if (!validarPassword(password, !esEdicion)) {
-        return;
-    }
-
-    // Preparar datos para PHP.
-    const datosUsuario = {
-
-        nombre: nombre,
-
-        apellidos: apellidos,
-
-        correo: correo,
-
-        password: password,
-
-        rol: rol
-    };
-
-    let api = API_CREAR_USUARIO;
-
-    if (esEdicion) {
-
-        const idNumerico = Number(id);
-
-        if (
-            !Number.isInteger(idNumerico) ||
-            idNumerico <= 0
-        ) {
-
-            alert(
-                "El identificador del usuario no es válido."
-            );
-
-            return;
-        }
-
-        datosUsuario.id = idNumerico;
-
-        api = API_EDITAR_USUARIO;
-    }
-
-    // Evitar envíos duplicados.
-    if (botonGuardar.disabled) {
-        return;
-    }
-
-    botonGuardar.disabled = true;
-    botonGuardar.textContent = "Guardando...";
-
-    try {
-
-        const datos = await solicitarAPI(api, {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json",
-                "X-Requested-With": "XMLHttpRequest"
-            },
-
-            body: JSON.stringify(datosUsuario)
-        });
-
-        if (!datos) {
-            return;
-        }
-
-        // Cerrar el modal.
-        if (document.activeElement instanceof HTMLElement) {
-
-            document.activeElement.blur();
-        }
-
-        bootstrap.Modal.getOrCreateInstance(
-            elemento("modalUsuario")
-        ).hide();
-
-        formulario.reset();
-
-        elemento("idUsuario").value = "";
-
-        // Actualizar información de MySQL.
-        const actualizado = await cargarUsuariosDesdeMySQL();
-
-        if (actualizado) {
-
-            alert(
-                esEdicion
-                    ? "Usuario actualizado correctamente en MySQL."
-                    : "Usuario registrado correctamente en MySQL."
-            );
-
-        } else {
-
-            alert(
-                "Los cambios se guardaron, pero no fue posible " +
-                "actualizar la lista. Recargá la página."
-            );
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Error al guardar usuario:",
-            error
-        );
-
-        alert(error.message);
-
-    } finally {
-
-        botonGuardar.disabled = false;
-
-        botonGuardar.textContent = "Guardar cambios";
-    }
-}
-
-// ==========================================
-// 19. ACTIVAR Y DESACTIVAR USUARIOS
-// ==========================================
-
-async function cambiarEstadoUsuario(id) {
-
-    if (cambiandoEstadoUsuario || eliminandoUsuario) {
-        return;
-    }
-
-    const usuario = buscarUsuario(id);
-
-    if (!usuario) {
-
-        alert("No se encontró el usuario.");
-
-        return;
-    }
-
-    const nuevoEstado = !usuario.activo;
-
-    const accion = nuevoEstado
-        ? "activar"
-        : "desactivar";
-
-    // Confirmar la operación.
-    const confirmar = confirm(
-        `¿Desea ${accion} al usuario ` +
-        `"${nombreCompleto(usuario)}"?`
-    );
-
-    if (!confirmar) {
-        return;
-    }
-
-    cambiandoEstadoUsuario = true;
-
-    try {
-
-        const datos = await solicitarAPI(
-            API_CAMBIAR_ESTADO,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Requested-With": "XMLHttpRequest"
-                },
-
-                body: JSON.stringify({
-                    id: usuario.id,
-                    activo: nuevoEstado
-                })
-            }
-        );
-
-        if (!datos) {
-            return;
-        }
-
-        // Actualizar los datos desde MySQL.
-        const actualizado = await cargarUsuariosDesdeMySQL();
-
-        if (actualizado) {
-
-            alert(
-                datos.mensaje ||
-                (
-                    nuevoEstado
-                        ? "Usuario activado correctamente."
-                        : "Usuario desactivado correctamente."
-                )
-            );
-
-        } else {
-
-            alert(
-                "El estado se modificó en MySQL, pero no fue " +
-                "posible actualizar la tabla. Recargá la página."
-            );
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Error al cambiar estado:",
-            error
-        );
-
-        alert(error.message);
-
-    } finally {
-
-        cambiandoEstadoUsuario = false;
-    }
-}
-
-// ==========================================
-// 20. ELIMINAR USUARIO DE MYSQL
-// ==========================================
-
-async function eliminarUsuario(id) {
-
-    // Evitar solicitudes duplicadas.
-    if (eliminandoUsuario || cambiandoEstadoUsuario) {
-        return;
-    }
-
-    // Buscar el usuario seleccionado.
-    const usuario = buscarUsuario(id);
-
-    if (!usuario) {
-
-        alert("No se encontró el usuario.");
-
-        return;
-    }
-
-    const nombre = nombreCompleto(usuario);
-
-    // ======================================
-    // PRIMERA CONFIRMACIÓN
-    // ======================================
-
-    const confirmar = confirm(
-        "¿Está seguro de que desea eliminar al usuario " +
-        `"${nombre}"?\n\n` +
-        "Esta acción eliminará permanentemente su cuenta " +
-        "de MySQL y no se puede deshacer.\n\n" +
-        "Si tiene información académica relacionada, " +
-        "el sistema no permitirá eliminarlo."
-    );
-
-    if (!confirmar) {
-
-        return;
-    }
-
-    // ======================================
-    // SEGUNDA CONFIRMACIÓN
-    // ======================================
-
-    // Para evitar eliminaciones accidentales,
-    // el administrador debe escribir ELIMINAR.
-
-    const confirmacionFinal = prompt(
-        "Confirmación de seguridad\n\n" +
-        `Usuario: ${nombre}\n` +
-        `Correo: ${usuario.correo}\n\n` +
-        "Escriba ELIMINAR para confirmar:"
-    );
-
-    if (
-        confirmacionFinal === null ||
-        confirmacionFinal.trim() !== "ELIMINAR"
-    ) {
-
-        alert(
-            "Eliminación cancelada. " +
-            "No se modificó ningún registro."
-        );
-
-        return;
-    }
-
-    // ======================================
-    // ENVIAR SOLICITUD A PHP
-    // ======================================
-
-    eliminandoUsuario = true;
-
-    try {
-
-        const datos = await solicitarAPI(
-            API_ELIMINAR_USUARIO,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Requested-With": "XMLHttpRequest"
-                },
-
-                body: JSON.stringify({
-                    id: usuario.id
-                })
-            }
-        );
-
-        if (!datos) {
-            return;
-        }
-
-        // ==================================
-        // ACTUALIZAR USUARIOS DESDE MYSQL
-        // ==================================
-
-        const actualizado = await cargarUsuariosDesdeMySQL();
-
-        if (actualizado) {
-
-            alert(
-                datos.mensaje ||
-                "Usuario eliminado correctamente de MySQL."
-            );
-
-        } else {
-
-            alert(
-                "El servidor confirmó la eliminación, " +
-                "pero no fue posible actualizar la lista. " +
-                "Recargá la página para consultar el estado real."
-            );
-        }
-
-    } catch (error) {
-
-        // La API puede rechazar la eliminación
-        // si existen registros relacionados.
-
-        console.error(
-            "Error al eliminar usuario:",
-            error
-        );
-
-        alert(error.message);
-
-    } finally {
-
-        eliminandoUsuario = false;
-    }
-}
-
-// ==========================================
-// 21. GESTIONAR ACCIONES DE USUARIOS
-// ==========================================
-
-function gestionarAccionUsuario(event) {
-
-    const boton = event.target.closest(
-        ".btn-accion-usuario"
-    );
-
-    if (!boton || boton.disabled) {
-        return;
-    }
-
-    const id = Number(boton.dataset.id);
-
-    const accion = boton.dataset.accion;
-
-    // Validar identificador.
-    if (!Number.isInteger(id) || id <= 0) {
-
-        alert("El identificador no es válido.");
-
-        return;
-    }
-
-    if (accion === "editar") {
-
-        abrirModalEditarUsuario(id);
-
-    } else if (accion === "estado") {
-
-        cambiarEstadoUsuario(id);
-
-    } else if (accion === "eliminar") {
-
-        eliminarUsuario(id);
-    }
-}
-
-// ==========================================
-// 22. MOSTRAR ROLES
+// 13. MOSTRAR ROLES
 // ==========================================
 
 function mostrarRoles() {
@@ -1229,20 +650,17 @@ function mostrarRoles() {
 
     if (contenedor) {
 
-        contenedor.innerHTML = "";
+        contenedor.innerHTML = roles.map(function (rol) {
 
-        for (const rol of roles) {
+            const permisos = rol.permisos.map(function (permiso) {
 
-            let permisos = "";
-
-            for (const permiso of rol.permisos) {
-
-                permisos += `
+                return `
                     <li>${escapar(permiso)}</li>
                 `;
-            }
 
-            contenedor.innerHTML += `
+            }).join("");
+
+            return `
                 <div class="col-12 col-md-4">
 
                     <article class="card h-100">
@@ -1268,7 +686,8 @@ function mostrarRoles() {
 
                 </div>
             `;
-        }
+
+        }).join("");
     }
 
     const tabla = elemento("tablaRoles");
@@ -1277,14 +696,14 @@ function mostrarRoles() {
         return;
     }
 
-    tabla.innerHTML = "";
-
-    if (cargandoUsuarios) {
+    if (cargandoUsuarios || errorUsuarios) {
 
         tabla.innerHTML = `
             <tr>
                 <td colspan="2" class="text-center">
-                    Cargando usuarios...
+                    ${escapar(
+                        errorUsuarios || "Cargando usuarios..."
+                    )}
                 </td>
             </tr>
         `;
@@ -1292,41 +711,28 @@ function mostrarRoles() {
         return;
     }
 
-    if (errorUsuarios) {
+    tabla.innerHTML = usuarios.map(function (usuario) {
 
-        tabla.innerHTML = `
-            <tr>
-                <td colspan="2"
-                    class="text-center text-danger">
-                    ${escapar(errorUsuarios)}
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    for (const usuario of usuarios) {
-
-        let opciones = "";
-
-        for (const rol of roles) {
+        const opciones = roles.map(function (rol) {
 
             const seleccionado =
                 rol.nombre === usuario.rol
                     ? "selected"
                     : "";
 
-            opciones += `
+            return `
                 <option
                     value="${escapar(rol.nombre)}"
                     ${seleccionado}>
+
                     ${escapar(rol.nombre)}
+
                 </option>
             `;
-        }
 
-        tabla.innerHTML += `
+        }).join("");
+
+        return `
             <tr>
 
                 <td>
@@ -1334,24 +740,492 @@ function mostrarRoles() {
                 </td>
 
                 <td>
+
                     <select
                         class="form-select"
                         disabled
-                        title="Cambiar roles desde Editar usuario">
+                        title="Cambiar rol desde Editar usuario">
+
                         ${opciones}
+
                     </select>
+
                 </td>
 
             </tr>
         `;
+
+    }).join("");
+}
+
+// ==========================================
+// 14. ABRIR NUEVO USUARIO
+// ==========================================
+
+function abrirModalNuevoUsuario() {
+
+    const formulario = elemento("formUsuario");
+
+    if (!formulario) {
+        return;
+    }
+
+    formulario.reset();
+
+    elemento("idUsuario").value = "";
+
+    elemento("tituloModalUsuario").textContent =
+        "Nuevo usuario";
+
+    cargarOpcionesRol();
+
+    const password = elemento("passwordUsuario");
+
+    password.value = "";
+
+    password.required = true;
+
+    password.placeholder = "Mínimo 8 caracteres";
+
+    bootstrap.Modal.getOrCreateInstance(
+        elemento("modalUsuario")
+    ).show();
+}
+
+// ==========================================
+// 15. ABRIR EDITAR USUARIO
+// ==========================================
+
+function abrirModalEditarUsuario(id) {
+
+    const usuario = buscarUsuario(id);
+
+    if (!usuario) {
+
+        alert("No se encontró el usuario.");
+
+        return;
+    }
+
+    const formulario = elemento("formUsuario");
+
+    if (!formulario) {
+        return;
+    }
+
+    formulario.reset();
+
+    elemento("idUsuario").value = usuario.id;
+
+    elemento("nombreUsuario").value = usuario.nombre;
+
+    elemento("apellidosUsuario").value =
+        usuario.apellidos;
+
+    elemento("correoUsuario").value = usuario.correo;
+
+    cargarOpcionesRol();
+
+    elemento("rolUsuario").value = usuario.rol;
+
+    // Contraseña opcional.
+    const password = elemento("passwordUsuario");
+
+    password.value = "";
+
+    password.required = false;
+
+    password.placeholder =
+        "Dejar en blanco para conservar la contraseña";
+
+    elemento("tituloModalUsuario").textContent =
+        "Editar usuario";
+
+    bootstrap.Modal.getOrCreateInstance(
+        elemento("modalUsuario")
+    ).show();
+}
+
+// ==========================================
+// 16. VALIDAR CONTRASEÑA
+// ==========================================
+
+function validarPassword(password, obligatorio) {
+
+    // Mantener contraseña anterior si se edita.
+    if (!obligatorio && password === "") {
+        return true;
+    }
+
+    const longitud = new TextEncoder()
+        .encode(password).length;
+
+    if (longitud < 8 || longitud > 72) {
+
+        alert(
+            "La contraseña debe tener entre 8 y 72 bytes."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+// ==========================================
+// 17. CREAR Y EDITAR USUARIOS
+// ==========================================
+
+async function guardarUsuario(event) {
+
+    event.preventDefault();
+
+    const formulario = elemento("formUsuario");
+
+    const boton = elemento("btnGuardarUsuario");
+
+    if (!formulario || !boton || boton.disabled) {
+        return;
+    }
+
+    const id = elemento("idUsuario").value.trim();
+
+    const esEdicion = id !== "";
+
+    const datosUsuario = {
+
+        nombre: elemento("nombreUsuario").value.trim(),
+
+        apellidos: elemento("apellidosUsuario").value.trim(),
+
+        correo: elemento("correoUsuario").value.trim(),
+
+        password: elemento("passwordUsuario").value,
+
+        rol: elemento("rolUsuario").value
+    };
+
+    // Validar formulario.
+    if (!formulario.reportValidity()) {
+        return;
+    }
+
+    if (
+        !datosUsuario.nombre ||
+        !datosUsuario.apellidos ||
+        !datosUsuario.correo ||
+        !datosUsuario.rol
+    ) {
+
+        alert("Complete los campos obligatorios.");
+
+        return;
+    }
+
+    if (!validarPassword(
+        datosUsuario.password,
+        !esEdicion
+    )) {
+
+        return;
+    }
+
+    // Seleccionar API.
+    let api = API_CREAR_USUARIO;
+
+    if (esEdicion) {
+
+        datosUsuario.id = Number(id);
+
+        if (
+            !Number.isInteger(datosUsuario.id) ||
+            datosUsuario.id <= 0
+        ) {
+
+            alert("El ID del usuario no es válido.");
+
+            return;
+        }
+
+        api = API_EDITAR_USUARIO;
+    }
+
+    boton.disabled = true;
+
+    boton.textContent = "Guardando...";
+
+    try {
+
+        const datos = await solicitarAPI(
+            api,
+            opcionesPOST(datosUsuario)
+        );
+
+        if (!datos) {
+            return;
+        }
+
+        cerrarModal("modalUsuario");
+
+        formulario.reset();
+
+        elemento("idUsuario").value = "";
+
+        const actualizado =
+            await cargarUsuariosDesdeMySQL();
+
+        if (actualizado) {
+
+            alert(
+                datos.mensaje ||
+                "Usuario guardado correctamente."
+            );
+
+        } else {
+
+            alert(
+                "El cambio se guardó, pero la lista no pudo " +
+                "actualizarse. Recargá la página."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al guardar usuario:",
+            error
+        );
+
+        alert(error.message);
+
+    } finally {
+
+        boton.disabled = false;
+
+        boton.textContent = "Guardar cambios";
     }
 }
 
 // ==========================================
-// 23. MOSTRAR CURSOS
+// 18. ACTIVAR Y DESACTIVAR USUARIOS
 // ==========================================
 
-// Los cursos siguen siendo de demostración.
+async function cambiarEstadoUsuario(id) {
+
+    if (cambiandoEstadoUsuario || eliminandoUsuario) {
+        return;
+    }
+
+    const usuario = buscarUsuario(id);
+
+    if (!usuario) {
+
+        alert("No se encontró el usuario.");
+
+        return;
+    }
+
+    const nuevoEstado = !usuario.activo;
+
+    const accion = nuevoEstado
+        ? "activar"
+        : "desactivar";
+
+    const confirmar = confirm(
+        `¿Desea ${accion} al usuario ` +
+        `"${nombreCompleto(usuario)}"?`
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    cambiandoEstadoUsuario = true;
+
+    try {
+
+        const datos = await solicitarAPI(
+            API_CAMBIAR_ESTADO,
+            opcionesPOST({
+                id: usuario.id,
+                activo: nuevoEstado
+            })
+        );
+
+        if (!datos) {
+            return;
+        }
+
+        const actualizado =
+            await cargarUsuariosDesdeMySQL();
+
+        if (actualizado) {
+
+            alert(
+                datos.mensaje ||
+                "Estado actualizado correctamente."
+            );
+
+        } else {
+
+            alert(
+                "El cambio se guardó, pero la lista no pudo " +
+                "actualizarse. Recargá la página."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al cambiar estado:",
+            error
+        );
+
+        alert(error.message);
+
+    } finally {
+
+        cambiandoEstadoUsuario = false;
+    }
+}
+
+// ==========================================
+// 19. ELIMINAR USUARIOS
+// ==========================================
+
+async function eliminarUsuario(id) {
+
+    if (eliminandoUsuario || cambiandoEstadoUsuario) {
+        return;
+    }
+
+    const usuario = buscarUsuario(id);
+
+    if (!usuario) {
+
+        alert("No se encontró el usuario.");
+
+        return;
+    }
+
+    const nombre = nombreCompleto(usuario);
+
+    // Primera confirmación.
+    const confirmar = confirm(
+        `¿Está seguro de que desea eliminar al usuario ` +
+        `"${nombre}"?\n\n` +
+        "Esta acción es permanente.\n" +
+        "Los registros relacionados están protegidos por MySQL."
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    // Segunda confirmación.
+    const confirmacion = prompt(
+        `Usuario: ${nombre}\n` +
+        `Correo: ${usuario.correo}\n\n` +
+        "Escriba ELIMINAR para confirmar:"
+    );
+
+    if (
+        confirmacion === null ||
+        confirmacion.trim() !== "ELIMINAR"
+    ) {
+
+        alert("Eliminación cancelada.");
+
+        return;
+    }
+
+    eliminandoUsuario = true;
+
+    try {
+
+        const datos = await solicitarAPI(
+            API_ELIMINAR_USUARIO,
+            opcionesPOST({
+                id: usuario.id
+            })
+        );
+
+        if (!datos) {
+            return;
+        }
+
+        const actualizado =
+            await cargarUsuariosDesdeMySQL();
+
+        if (actualizado) {
+
+            alert(
+                datos.mensaje ||
+                "Usuario eliminado correctamente."
+            );
+
+        } else {
+
+            alert(
+                "MySQL confirmó la eliminación, " +
+                "pero la lista no pudo actualizarse."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al eliminar usuario:",
+            error
+        );
+
+        alert(error.message);
+
+    } finally {
+
+        eliminandoUsuario = false;
+    }
+}
+
+// ==========================================
+// 20. ACCIONES DE USUARIOS
+// ==========================================
+
+function gestionarAccionUsuario(event) {
+
+    const boton = event.target.closest(
+        ".btn-accion-usuario"
+    );
+
+    if (!boton || boton.disabled) {
+        return;
+    }
+
+    const id = Number(boton.dataset.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return;
+    }
+
+    const accion = boton.dataset.accion;
+
+    if (accion === "editar") {
+
+        abrirModalEditarUsuario(id);
+
+    } else if (accion === "estado") {
+
+        cambiarEstadoUsuario(id);
+
+    } else if (accion === "eliminar") {
+
+        eliminarUsuario(id);
+    }
+}
+
+// ==========================================
+// 21. MOSTRAR CURSOS REALES
+// ==========================================
 
 function mostrarCursos() {
 
@@ -1361,37 +1235,66 @@ function mostrarCursos() {
         return;
     }
 
+    // Cargando o error.
+    if (cargandoCursos || errorCursos) {
+
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    class="text-center ${errorCursos ? "text-danger" : ""}">
+
+                    ${escapar(
+                        errorCursos ||
+                        "Cargando cursos desde MySQL..."
+                    )}
+
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    // Buscar por código o nombre.
     const texto = (
         elemento("buscarCurso")?.value || ""
     ).trim().toLowerCase();
 
-    let filas = "";
+    const filtrados = cursos.filter(function (curso) {
 
-    for (const curso of cursos) {
-
-        const datos = (
+        const contenido = (
             curso.codigo +
             " " +
             curso.nombre
         ).toLowerCase();
 
-        if (!datos.includes(texto)) {
-            continue;
-        }
+        return contenido.includes(texto);
+    });
 
-        const docente = buscarUsuario(curso.docenteId);
+    // Sin resultados.
+    if (filtrados.length === 0) {
 
-        let nombreDocente = "Sin asignar";
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center">
 
-        if (
-            docente !== null &&
-            docente.rol === "Docente"
-        ) {
+                    ${
+                        cursos.length === 0
+                            ? "Todavía no hay cursos registrados en MySQL."
+                            : "No hay cursos que coincidan con la búsqueda."
+                    }
 
-            nombreDocente = nombreCompleto(docente);
-        }
+                </td>
+            </tr>
+        `;
 
-        filas += `
+        return;
+    }
+
+    // Mostrar cursos y acciones.
+    tabla.innerHTML = filtrados.map(function (curso) {
+
+        return `
             <tr>
 
                 <td>
@@ -1403,15 +1306,13 @@ function mostrarCursos() {
                 </td>
 
                 <td>
-                    ${escapar(nombreDocente)}
+                    ${escapar(
+                        curso.descripcion || "Sin descripción"
+                    )}
                 </td>
 
                 <td>
-                    ${escapar(curso.periodo)}
-                </td>
-
-                <td>
-                    ${curso.matriculados}
+                    ${curso.creditos}
                 </td>
 
                 <td>
@@ -1426,7 +1327,9 @@ function mostrarCursos() {
                                btn-accion-curso"
                         data-accion="editar"
                         data-id="${curso.id}">
+
                         Editar
+
                     </button>
 
                     <button
@@ -1435,35 +1338,24 @@ function mostrarCursos() {
                                btn-accion-curso"
                         data-accion="eliminar"
                         data-id="${curso.id}">
+
                         Eliminar
+
                     </button>
 
                 </td>
 
             </tr>
         `;
-    }
 
-    if (filas === "") {
-
-        filas = `
-            <tr>
-                <td colspan="7" class="text-center">
-                    No hay cursos que coincidan
-                    con la búsqueda.
-                </td>
-            </tr>
-        `;
-    }
-
-    tabla.innerHTML = filas;
+    }).join("");
 }
 
 // ==========================================
-// 24. ABRIR MODAL DE CURSOS
+// 22. ABRIR NUEVO CURSO
 // ==========================================
 
-function abrirModalCurso(id) {
+function abrirModalNuevoCurso() {
 
     const formulario = elemento("formCurso");
 
@@ -1475,52 +1367,13 @@ function abrirModalCurso(id) {
 
     elemento("idCurso").value = "";
 
+    elemento("activoCurso").checked = true;
+
     elemento("tituloModalCurso").textContent =
         "Nuevo curso";
 
-    cargarOpcionesPeriodo();
-    cargarOpcionesDocente();
-
-    if (id) {
-
-        const curso = buscarCurso(id);
-
-        if (!curso) {
-
-            alert("El curso no existe.");
-
-            return;
-        }
-
-        elemento("tituloModalCurso").textContent =
-            "Editar curso";
-
-        elemento("idCurso").value = curso.id;
-
-        elemento("codigoCurso").value = curso.codigo;
-
-        elemento("nombreCurso").value = curso.nombre;
-
-        elemento("periodoCurso").value = curso.periodo;
-
-        const selectDocente = elemento("docenteCurso");
-
-        if (selectDocente) {
-
-            const existe = Array.from(
-                selectDocente.options
-            ).some(function (opcion) {
-
-                return opcion.value === String(
-                    curso.docenteId
-                );
-            });
-
-            selectDocente.value = existe
-                ? String(curso.docenteId)
-                : "0";
-        }
-    }
+    elemento("btnGuardarCurso").textContent =
+        "Guardar curso";
 
     bootstrap.Modal.getOrCreateInstance(
         elemento("modalCurso")
@@ -1528,145 +1381,335 @@ function abrirModalCurso(id) {
 }
 
 // ==========================================
-// 25. ELIMINAR CURSO TEMPORAL
+// 23. ABRIR EDITAR CURSO
 // ==========================================
 
-function eliminarCurso(id) {
+function abrirModalEditarCurso(id) {
+
+    const curso = buscarCurso(id);
+
+    if (!curso) {
+
+        alert("No se encontró el curso.");
+
+        return;
+    }
+
+    const formulario = elemento("formCurso");
+
+    if (!formulario) {
+        return;
+    }
+
+    formulario.reset();
+
+    // Cargar datos actuales.
+    elemento("idCurso").value = curso.id;
+
+    elemento("codigoCurso").value = curso.codigo;
+
+    elemento("nombreCurso").value = curso.nombre;
+
+    elemento("descripcionCurso").value =
+        curso.descripcion;
+
+    elemento("creditosCurso").value =
+        curso.creditos;
+
+    elemento("activoCurso").checked =
+        curso.activo;
+
+    // Actualizar textos.
+    elemento("tituloModalCurso").textContent =
+        "Editar curso";
+
+    elemento("btnGuardarCurso").textContent =
+        "Guardar cambios";
+
+    bootstrap.Modal.getOrCreateInstance(
+        elemento("modalCurso")
+    ).show();
+}
+
+// ==========================================
+// 24. CREAR Y EDITAR CURSOS
+// ==========================================
+
+async function guardarCurso(event) {
+
+    event.preventDefault();
+
+    const formulario = elemento("formCurso");
+
+    const boton = elemento("btnGuardarCurso");
+
+    if (!formulario || !boton || boton.disabled) {
+        return;
+    }
+
+    if (!formulario.reportValidity()) {
+        return;
+    }
+
+    // Determinar creación o edición.
+    const id = elemento("idCurso").value.trim();
+
+    const esEdicion = id !== "";
+
+    // Obtener datos.
+    const datosCurso = {
+
+        codigo: elemento("codigoCurso")
+            .value.trim().toUpperCase(),
+
+        nombre: elemento("nombreCurso")
+            .value.trim(),
+
+        descripcion: elemento("descripcionCurso")
+            .value.trim(),
+
+        creditos: Number(
+            elemento("creditosCurso").value
+        ),
+
+        activo: elemento("activoCurso").checked
+    };
+
+    // Validar código y nombre.
+    if (
+        !datosCurso.codigo ||
+        !datosCurso.nombre ||
+        datosCurso.codigo.length > 20 ||
+        datosCurso.nombre.length > 150
+    ) {
+
+        alert(
+            "Revisá el código y el nombre del curso. " +
+            "Máximos: 20 y 150 caracteres."
+        );
+
+        return;
+    }
+
+    // Validar créditos.
+    if (
+        !Number.isInteger(datosCurso.creditos) ||
+        datosCurso.creditos < 1 ||
+        datosCurso.creditos > 2147483647
+    ) {
+
+        alert(
+            "Los créditos deben ser un número entero mayor que cero."
+        );
+
+        return;
+    }
+
+    // Seleccionar API.
+    let api = API_CREAR_CURSO;
+
+    if (esEdicion) {
+
+        datosCurso.id = Number(id);
+
+        if (
+            !Number.isInteger(datosCurso.id) ||
+            datosCurso.id <= 0
+        ) {
+
+            alert("El ID del curso no es válido.");
+
+            return;
+        }
+
+        api = API_EDITAR_CURSO;
+    }
+
+    boton.disabled = true;
+
+    boton.textContent = "Guardando...";
+
+    try {
+
+        const datos = await solicitarAPI(
+            api,
+            opcionesPOST(datosCurso)
+        );
+
+        if (!datos) {
+            return;
+        }
+
+        cerrarModal("modalCurso");
+
+        formulario.reset();
+
+        elemento("idCurso").value = "";
+
+        const actualizado =
+            await cargarCursosDesdeMySQL();
+
+        if (actualizado) {
+
+            alert(
+                datos.mensaje ||
+                "Curso guardado correctamente en MySQL."
+            );
+
+        } else {
+
+            alert(
+                "El curso se guardó, pero la lista no pudo " +
+                "actualizarse. Recargá la página."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al guardar curso:",
+            error
+        );
+
+        alert(error.message);
+
+    } finally {
+
+        boton.disabled = false;
+
+        boton.textContent = esEdicion
+            ? "Guardar cambios"
+            : "Guardar curso";
+    }
+}
+
+// ==========================================
+// 25. ELIMINAR CURSOS DESDE MYSQL
+// ==========================================
+
+async function eliminarCurso(id) {
+
+    // Impedir solicitudes duplicadas.
+    if (eliminandoCurso) {
+        return;
+    }
+
+    // Buscar curso.
+    const curso = buscarCurso(id);
+
+    if (!curso) {
+
+        alert("No se encontró el curso.");
+
+        return;
+    }
+
+    const nombre = (
+        curso.codigo +
+        " - " +
+        curso.nombre
+    );
+
+    // ======================================
+    // PRIMERA CONFIRMACIÓN
+    // ======================================
 
     const confirmar = confirm(
-        "¿Desea eliminar este curso de demostración? " +
-        "El cambio será temporal y no afectará MySQL."
+        `¿Está seguro de que desea eliminar el curso "${nombre}"?\n\n` +
+        "La eliminación es permanente y no se puede deshacer.\n" +
+        "MySQL impedirá borrar cursos que tengan grupos, " +
+        "planes de estudio o prerrequisitos relacionados."
     );
 
     if (!confirmar) {
         return;
     }
 
-    cursos = cursos.filter(
-        curso => curso.id !== id
+    // ======================================
+    // SEGUNDA CONFIRMACIÓN
+    // ======================================
+
+    const confirmacionFinal = prompt(
+        `Curso: ${nombre}\n\n` +
+        "Escriba ELIMINAR para confirmar:"
     );
 
-    actualizarTodo();
-}
-
-// ==========================================
-// 26. GUARDAR CURSO TEMPORAL
-// ==========================================
-
-function guardarCurso(event) {
-
-    event.preventDefault();
-
-    const formulario = elemento("formCurso");
-
-    if (!formulario || !formulario.reportValidity()) {
-        return;
-    }
-
-    const id = elemento("idCurso").value;
-
-    const codigo = elemento("codigoCurso")
-        .value.trim().toUpperCase();
-
-    const nombre = elemento("nombreCurso")
-        .value.trim();
-
-    const docenteId = Number(
-        elemento("docenteCurso").value
-    );
-
-    const periodo = elemento("periodoCurso").value;
-
-    if (codigo === "" || nombre === "") {
+    if (
+        confirmacionFinal === null ||
+        confirmacionFinal.trim() !== "ELIMINAR"
+    ) {
 
         alert(
-            "Complete el código y el nombre del curso."
+            "Eliminación cancelada. " +
+            "No se modificó ningún curso."
         );
 
         return;
     }
 
-    const repetido = cursos.some(function (curso) {
+    // ======================================
+    // ENVIAR SOLICITUD A PHP
+    // ======================================
 
-        return (
-            curso.codigo === codigo &&
-            curso.periodo === periodo &&
-            String(curso.id) !== id
+    eliminandoCurso = true;
+
+    try {
+
+        const datos = await solicitarAPI(
+            API_ELIMINAR_CURSO,
+            opcionesPOST({
+                id: curso.id
+            })
         );
-    });
 
-    if (repetido) {
-
-        alert(
-            "Ese código ya existe en el mismo período."
-        );
-
-        return;
-    }
-
-    if (id === "") {
-
-        // Crear curso temporal.
-        cursos.push({
-
-            id: siguienteId,
-
-            codigo: codigo,
-
-            nombre: nombre,
-
-            docenteId: docenteId,
-
-            periodo: periodo,
-
-            matriculados: 0,
-
-            activo: true
-        });
-
-        siguienteId++;
-
-    } else {
-
-        // Editar curso temporal.
-        const curso = buscarCurso(Number(id));
-
-        if (!curso) {
-
-            alert("No se encontró el curso.");
-
+        if (!datos) {
             return;
         }
 
-        curso.codigo = codigo;
+        // ==================================
+        // ACTUALIZAR LA TABLA DESDE MYSQL
+        // ==================================
 
-        curso.nombre = nombre;
+        const actualizado =
+            await cargarCursosDesdeMySQL();
 
-        curso.docenteId = docenteId;
+        if (actualizado) {
 
-        curso.periodo = periodo;
+            alert(
+                datos.mensaje ||
+                "Curso eliminado correctamente de MySQL."
+            );
+
+        } else {
+
+            alert(
+                "El servidor confirmó la eliminación, " +
+                "pero la lista no pudo actualizarse. " +
+                "Recargá la página."
+            );
+        }
+
+    } catch (error) {
+
+        // Si el curso tiene registros
+        // relacionados, PHP devolverá un
+        // mensaje explicando la restricción.
+
+        console.error(
+            "Error al eliminar curso:",
+            error
+        );
+
+        alert(error.message);
+
+    } finally {
+
+        eliminandoCurso = false;
     }
-
-    // Cerrar modal.
-    if (document.activeElement instanceof HTMLElement) {
-
-        document.activeElement.blur();
-    }
-
-    bootstrap.Modal.getOrCreateInstance(
-        elemento("modalCurso")
-    ).hide();
-
-    actualizarTodo();
-
-    alert(
-        "Curso actualizado en la demostración. " +
-        "Este cambio todavía no se guarda en MySQL."
-    );
 }
 
 // ==========================================
-// 27. GESTIONAR ACCIONES DE CURSOS
+// 26. ACCIONES DE CURSOS
 // ==========================================
 
 function gestionarAccionCurso(event) {
@@ -1675,17 +1718,24 @@ function gestionarAccionCurso(event) {
         ".btn-accion-curso"
     );
 
-    if (!boton) {
+    if (!boton || boton.disabled) {
         return;
     }
 
     const id = Number(boton.dataset.id);
 
+    if (
+        !Number.isInteger(id) ||
+        id <= 0
+    ) {
+        return;
+    }
+
     const accion = boton.dataset.accion;
 
     if (accion === "editar") {
 
-        abrirModalCurso(id);
+        abrirModalEditarCurso(id);
 
     } else if (accion === "eliminar") {
 
@@ -1694,7 +1744,7 @@ function gestionarAccionCurso(event) {
 }
 
 // ==========================================
-// 28. CONFIGURAR EVENTOS
+// 27. CONFIGURAR EVENTOS
 // ==========================================
 
 function configurarEventos() {
@@ -1703,13 +1753,13 @@ function configurarEventos() {
     // USUARIOS
     // ======================================
 
-    // Abrir formulario de nuevo usuario.
+    // Nuevo usuario.
     elemento("btnNuevoUsuario")?.addEventListener(
         "click",
         abrirModalNuevoUsuario
     );
 
-    // Crear o editar usuario.
+    // Guardar usuario.
     elemento("formUsuario")?.addEventListener(
         "submit",
         guardarUsuario
@@ -1737,21 +1787,19 @@ function configurarEventos() {
     // CURSOS
     // ======================================
 
-    // Crear curso temporal.
+    // Nuevo curso.
     elemento("btnNuevoCurso")?.addEventListener(
         "click",
-        function () {
-            abrirModalCurso(0);
-        }
+        abrirModalNuevoCurso
     );
 
-    // Guardar curso temporal.
+    // Crear o editar curso.
     elemento("formCurso")?.addEventListener(
         "submit",
         guardarCurso
     );
 
-    // Editar o eliminar cursos temporales.
+    // Editar o eliminar curso.
     elemento("tablaCursos")?.addEventListener(
         "click",
         gestionarAccionCurso
@@ -1786,27 +1834,25 @@ function configurarEventos() {
 }
 
 // ==========================================
-// 29. INICIALIZAR PANEL
+// 28. INICIAR PANEL
 // ==========================================
 
 function iniciarPanel() {
 
-    // Configurar eventos.
     configurarEventos();
 
-    // Cargar opciones.
     cargarOpcionesRol();
-    cargarOpcionesPeriodo();
 
-    // Mostrar información inicial.
     actualizarTodo();
 
-    // Consultar usuarios desde MySQL.
+    // Consultar datos reales.
     cargarUsuariosDesdeMySQL();
+
+    cargarCursosDesdeMySQL();
 }
 
 // ==========================================
-// 30. ESPERAR DOCUMENTO HTML
+// 29. ESPERAR DOCUMENTO HTML
 // ==========================================
 
 if (document.readyState === "loading") {

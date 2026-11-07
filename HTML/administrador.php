@@ -4,10 +4,10 @@
    CAMPUS VIRTUAL - PANEL ADMINISTRADOR
    ========================================= */
 
-// Solo los administradores pueden acceder.
+// Solo administradores pueden ingresar.
 $rolRequerido = "administrador";
 
-// Validar sesión y permisos.
+// Verificar sesión, estado y permisos.
 require_once __DIR__ . "/../api/proteger.php";
 
 ?>
@@ -18,8 +18,9 @@ require_once __DIR__ . "/../api/proteger.php";
 <head>
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>Administración - Campus Virtual</title>
 
@@ -30,33 +31,37 @@ require_once __DIR__ . "/../api/proteger.php";
 
     <!-- Bootstrap Icons -->
     <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+        rel="stylesheet">
 
-    <!-- Estilos del administrador -->
-    <link rel="stylesheet" href="../css/administrador.css">
+    <!-- Estilos del panel -->
+    <link
+        rel="stylesheet"
+        href="../css/administrador.css">
 
 </head>
 
 <body>
 
-    <!-- =========================================
+    <!-- =====================================
          ACCESIBILIDAD
-         ========================================= -->
+         ===================================== -->
 
     <a class="saltar-contenido" href="#contenido">
         Saltar al contenido
     </a>
 
-
-    <!-- =========================================
+    <!-- =====================================
          MENÚ LATERAL
-         ========================================= -->
+         ===================================== -->
 
-    <aside class="menu-lateral" id="menuLateral">
+    <aside
+        class="menu-lateral"
+        id="menuLateral">
 
-        <!-- Marca del Campus -->
-        <a href="../homepage.html" class="marca">
+        <a
+            href="../homepage.html"
+            class="marca">
 
             <span class="marca-icono" aria-hidden="true">
                 <i class="bi bi-mortarboard-fill"></i>
@@ -73,37 +78,41 @@ require_once __DIR__ . "/../api/proteger.php";
             ADMINISTRACIÓN
         </p>
 
-        <!-- Navegación principal -->
-        <nav class="navegacion"
-             aria-label="Menú de administración">
+        <nav
+            class="navegacion"
+            aria-label="Menú de administración">
 
-            <a href="#resumen"
-               class="enlace-menu nav-link active"
-               aria-current="page">
+            <a
+                href="#resumen"
+                class="enlace-menu nav-link active"
+                aria-current="page">
 
                 <span aria-hidden="true">01</span>
                 Resumen
 
             </a>
 
-            <a href="#usuarios"
-               class="enlace-menu nav-link">
+            <a
+                href="#usuarios"
+                class="enlace-menu nav-link">
 
                 <span aria-hidden="true">02</span>
                 Usuarios
 
             </a>
 
-            <a href="#roles"
-               class="enlace-menu nav-link">
+            <a
+                href="#roles"
+                class="enlace-menu nav-link">
 
                 <span aria-hidden="true">03</span>
                 Roles
 
             </a>
 
-            <a href="#cursos"
-               class="enlace-menu nav-link">
+            <a
+                href="#cursos"
+                class="enlace-menu nav-link">
 
                 <span aria-hidden="true">04</span>
                 Cursos
@@ -112,19 +121,15 @@ require_once __DIR__ . "/../api/proteger.php";
 
         </nav>
 
-
-        <!-- =====================================
-             CIERRE DE SESIÓN
-             ===================================== -->
-
         <div class="menu-inferior">
 
             <p class="indicador-demo">
                 Módulo administrativo · Demo
             </p>
 
-            <a href="../api/logout.php"
-               class="enlace-volver">
+            <a
+                href="../api/logout.php"
+                class="enlace-volver">
 
                 <span>Cerrar sesión</span>
                 <span aria-hidden="true">↗</span>
@@ -135,10 +140,9 @@ require_once __DIR__ . "/../api/proteger.php";
 
     </aside>
 
-
-    <!-- =========================================
+    <!-- =====================================
          ÁREA PRINCIPAL
-         ========================================= -->
+         ===================================== -->
 
     <div class="area-principal">
 
@@ -165,8 +169,7 @@ require_once __DIR__ . "/../api/proteger.php";
 
             </div>
 
-
-            <!-- Usuario autenticado -->
+            <!-- Usuario conectado -->
             <div class="usuario">
 
                 <div>
@@ -193,14 +196,12 @@ require_once __DIR__ . "/../api/proteger.php";
 
         </header>
 
-
-        <!-- =====================================
+        <!-- =================================
              CONTENIDO PRINCIPAL
-             ===================================== -->
+             ================================= -->
 
         <main id="contenido">
 
-            <!-- Encabezado -->
             <div class="encabezado-pagina">
 
                 <div>
@@ -222,25 +223,27 @@ require_once __DIR__ . "/../api/proteger.php";
 
             </div>
 
-
-            <!-- =================================
+            <!-- =============================
                  RESUMEN DEL CAMPUS
-                 ================================= -->
+                 ============================= -->
 
-            <section class="seccion" id="resumen">
+            <section
+                class="seccion"
+                id="resumen">
 
                 <h2>Resumen del campus</h2>
 
                 <div class="row g-3 mb-4">
 
-                    <!-- Total de usuarios -->
+                    <!-- Usuarios -->
                     <div class="col-6 col-md-3">
 
                         <article class="card text-center">
 
                             <div class="card-body">
 
-                                <h3 class="numero"
+                                <h3
+                                    class="numero"
                                     id="totalUsuarios">0</h3>
 
                                 <p class="card-text">
@@ -253,15 +256,15 @@ require_once __DIR__ . "/../api/proteger.php";
 
                     </div>
 
-
-                    <!-- Total de estudiantes -->
+                    <!-- Estudiantes -->
                     <div class="col-6 col-md-3">
 
                         <article class="card text-center">
 
                             <div class="card-body">
 
-                                <h3 class="numero"
+                                <h3
+                                    class="numero"
                                     id="totalEstudiantes">0</h3>
 
                                 <p class="card-text">
@@ -274,15 +277,15 @@ require_once __DIR__ . "/../api/proteger.php";
 
                     </div>
 
-
-                    <!-- Total de docentes -->
+                    <!-- Docentes -->
                     <div class="col-6 col-md-3">
 
                         <article class="card text-center">
 
                             <div class="card-body">
 
-                                <h3 class="numero"
+                                <h3
+                                    class="numero"
                                     id="totalDocentes">0</h3>
 
                                 <p class="card-text">
@@ -295,15 +298,15 @@ require_once __DIR__ . "/../api/proteger.php";
 
                     </div>
 
-
-                    <!-- Total de cursos activos -->
+                    <!-- Cursos activos -->
                     <div class="col-6 col-md-3">
 
                         <article class="card text-center">
 
                             <div class="card-body">
 
-                                <h3 class="numero"
+                                <h3
+                                    class="numero"
                                     id="totalCursos">0</h3>
 
                                 <p class="card-text">
@@ -318,31 +321,28 @@ require_once __DIR__ . "/../api/proteger.php";
 
                 </div>
 
+                <h5>Últimos usuarios registrados</h5>
 
-                <!-- Últimos usuarios registrados -->
-                <h5>
-                    Últimos usuarios registrados
-                </h5>
-
-                <ul class="list-group" id="listaRecientes">
+                <ul
+                    class="list-group"
+                    id="listaRecientes">
                 </ul>
 
             </section>
 
-
-            <!-- =================================
+            <!-- =============================
                  GESTIÓN DE USUARIOS
-                 ================================= -->
+                 ============================= -->
 
-            <section class="seccion" id="usuarios">
+            <section
+                class="seccion"
+                id="usuarios">
 
                 <h2>Gestión de usuarios</h2>
 
-                <!-- Buscador y filtros -->
                 <div class="row g-2 mb-3">
 
-                    <!-- Buscar por nombre o correo -->
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
 
                         <input
                             type="text"
@@ -353,14 +353,12 @@ require_once __DIR__ . "/../api/proteger.php";
 
                     </div>
 
-
-                    <!-- Filtrar por rol -->
-                    <div class="col-3">
+                    <div class="col-6 col-md-3">
 
                         <select
                             id="filtroRol"
                             class="form-select"
-                            aria-label="Filtrar usuarios por rol">
+                            aria-label="Filtrar por rol">
 
                             <option value="">
                                 Todos los roles
@@ -382,9 +380,7 @@ require_once __DIR__ . "/../api/proteger.php";
 
                     </div>
 
-
-                    <!-- Nuevo usuario -->
-                    <div class="col-3">
+                    <div class="col-6 col-md-3">
 
                         <button
                             type="button"
@@ -399,8 +395,6 @@ require_once __DIR__ . "/../api/proteger.php";
 
                 </div>
 
-
-                <!-- Tabla de usuarios -->
                 <div class="table-responsive">
 
                     <table class="table table-hover align-middle">
@@ -417,7 +411,6 @@ require_once __DIR__ . "/../api/proteger.php";
 
                         </thead>
 
-                        <!-- Datos obtenidos desde MySQL -->
                         <tbody id="tablaUsuarios">
                         </tbody>
 
@@ -427,25 +420,25 @@ require_once __DIR__ . "/../api/proteger.php";
 
             </section>
 
-
-            <!-- =================================
+            <!-- =============================
                  GESTIÓN DE ROLES
-                 ================================= -->
+                 ============================= -->
 
-            <section class="seccion" id="roles">
+            <section
+                class="seccion"
+                id="roles">
 
                 <h2>Gestión de roles</h2>
 
-                <!-- Tarjetas de roles -->
-                <div class="row g-3 mb-4"
-                     id="tarjetasRoles">
+                <div
+                    class="row g-3 mb-4"
+                    id="tarjetasRoles">
                 </div>
 
                 <h5>
                     Cambiar el rol de un usuario
                 </h5>
 
-                <!-- Tabla de roles -->
                 <div class="table-responsive">
 
                     <table class="table align-middle">
@@ -468,19 +461,24 @@ require_once __DIR__ . "/../api/proteger.php";
 
             </section>
 
-
-            <!-- =================================
+            <!-- =============================
                  GESTIÓN DE CURSOS
-                 ================================= -->
+                 ============================= -->
 
-            <section class="seccion" id="cursos">
+            <section
+                class="seccion"
+                id="cursos">
 
                 <h2>Gestión de cursos</h2>
 
-                <!-- Buscador de cursos -->
+                <p class="texto-secundario">
+                    Administrá el catálogo de cursos
+                    registrado en la base de datos.
+                </p>
+
                 <div class="row g-2 mb-3">
 
-                    <div class="col-9">
+                    <div class="col-12 col-md-9">
 
                         <input
                             type="text"
@@ -491,8 +489,7 @@ require_once __DIR__ . "/../api/proteger.php";
 
                     </div>
 
-                    <!-- Nuevo curso -->
-                    <div class="col-3">
+                    <div class="col-12 col-md-3">
 
                         <button
                             type="button"
@@ -507,8 +504,6 @@ require_once __DIR__ . "/../api/proteger.php";
 
                 </div>
 
-
-                <!-- Tabla de cursos -->
                 <div class="table-responsive">
 
                     <table class="table table-hover align-middle">
@@ -518,9 +513,8 @@ require_once __DIR__ . "/../api/proteger.php";
                             <tr>
                                 <th>Código</th>
                                 <th>Curso</th>
-                                <th>Docente</th>
-                                <th>Período</th>
-                                <th>Matriculados</th>
+                                <th>Descripción</th>
+                                <th>Créditos</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -528,6 +522,17 @@ require_once __DIR__ . "/../api/proteger.php";
                         </thead>
 
                         <tbody id="tablaCursos">
+
+                            <tr>
+                                <td
+                                    colspan="6"
+                                    class="text-center">
+
+                                    Cargando cursos...
+
+                                </td>
+                            </tr>
+
                         </tbody>
 
                     </table>
@@ -538,10 +543,9 @@ require_once __DIR__ . "/../api/proteger.php";
 
         </main>
 
-
-        <!-- =====================================
+        <!-- =================================
              PIE DE PÁGINA
-             ===================================== -->
+             ================================= -->
 
         <footer class="pie-pagina">
 
@@ -557,10 +561,9 @@ require_once __DIR__ . "/../api/proteger.php";
 
     </div>
 
-
-    <!-- =========================================
+    <!-- =====================================
          MODAL DE USUARIOS
-         ========================================= -->
+         ===================================== -->
 
     <div
         class="modal fade"
@@ -573,10 +576,10 @@ require_once __DIR__ . "/../api/proteger.php";
 
             <div class="modal-content">
 
-                <!-- Encabezado del modal -->
                 <div class="modal-header">
 
-                    <h5 class="modal-title"
+                    <h5
+                        class="modal-title"
                         id="tituloModalUsuario">
 
                         Nuevo usuario
@@ -592,23 +595,15 @@ require_once __DIR__ . "/../api/proteger.php";
 
                 </div>
 
-
-                <!-- Formulario de usuario -->
                 <form id="formUsuario">
 
                     <div class="modal-body">
 
-                        <!-- ID para futura edición -->
                         <input
                             type="hidden"
-                            id="idUsuario"
-                            name="idUsuario">
+                            id="idUsuario">
 
-
-                        <!-- =================================
-                             NOMBRE
-                             ================================= -->
-
+                        <!-- Nombre -->
                         <div class="mb-3">
 
                             <label
@@ -622,7 +617,6 @@ require_once __DIR__ . "/../api/proteger.php";
                             <input
                                 type="text"
                                 id="nombreUsuario"
-                                name="nombreUsuario"
                                 class="form-control"
                                 maxlength="100"
                                 autocomplete="given-name"
@@ -630,11 +624,7 @@ require_once __DIR__ . "/../api/proteger.php";
 
                         </div>
 
-
-                        <!-- =================================
-                             APELLIDOS
-                             ================================= -->
-
+                        <!-- Apellidos -->
                         <div class="mb-3">
 
                             <label
@@ -648,7 +638,6 @@ require_once __DIR__ . "/../api/proteger.php";
                             <input
                                 type="text"
                                 id="apellidosUsuario"
-                                name="apellidosUsuario"
                                 class="form-control"
                                 maxlength="150"
                                 autocomplete="family-name"
@@ -656,11 +645,7 @@ require_once __DIR__ . "/../api/proteger.php";
 
                         </div>
 
-
-                        <!-- =================================
-                             CORREO INSTITUCIONAL
-                             ================================= -->
-
+                        <!-- Correo -->
                         <div class="mb-3">
 
                             <label
@@ -674,7 +659,6 @@ require_once __DIR__ . "/../api/proteger.php";
                             <input
                                 type="email"
                                 id="correoUsuario"
-                                name="correoUsuario"
                                 class="form-control"
                                 placeholder="correo@universidad.com"
                                 maxlength="254"
@@ -683,11 +667,7 @@ require_once __DIR__ . "/../api/proteger.php";
 
                         </div>
 
-
-                        <!-- =================================
-                             CONTRASEÑA - NUEVO CAMPO
-                             ================================= -->
-
+                        <!-- Contraseña -->
                         <div class="mb-3">
 
                             <label
@@ -701,15 +681,15 @@ require_once __DIR__ . "/../api/proteger.php";
                             <input
                                 type="password"
                                 id="passwordUsuario"
-                                name="passwordUsuario"
                                 class="form-control"
                                 placeholder="Mínimo 8 caracteres"
                                 minlength="8"
                                 autocomplete="new-password"
                                 required>
 
-                            <div class="form-text"
-                                 id="ayudaPasswordUsuario">
+                            <div
+                                class="form-text"
+                                id="ayudaPasswordUsuario">
 
                                 La contraseña debe contener
                                 al menos 8 caracteres.
@@ -718,11 +698,7 @@ require_once __DIR__ . "/../api/proteger.php";
 
                         </div>
 
-
-                        <!-- =================================
-                             ROL
-                             ================================= -->
-
+                        <!-- Rol -->
                         <div class="mb-3">
 
                             <label
@@ -735,7 +711,6 @@ require_once __DIR__ . "/../api/proteger.php";
 
                             <select
                                 id="rolUsuario"
-                                name="rolUsuario"
                                 class="form-select"
                                 required>
                             </select>
@@ -744,8 +719,6 @@ require_once __DIR__ . "/../api/proteger.php";
 
                     </div>
 
-
-                    <!-- Acciones del modal -->
                     <div class="modal-footer">
 
                         <button
@@ -776,10 +749,9 @@ require_once __DIR__ . "/../api/proteger.php";
 
     </div>
 
-
-    <!-- =========================================
+    <!-- =====================================
          MODAL DE CURSOS
-         ========================================= -->
+         ===================================== -->
 
     <div
         class="modal fade"
@@ -792,10 +764,10 @@ require_once __DIR__ . "/../api/proteger.php";
 
             <div class="modal-content">
 
-                <!-- Encabezado del modal -->
                 <div class="modal-header">
 
-                    <h5 class="modal-title"
+                    <h5
+                        class="modal-title"
                         id="tituloModalCurso">
 
                         Nuevo curso
@@ -811,16 +783,14 @@ require_once __DIR__ . "/../api/proteger.php";
 
                 </div>
 
-
                 <form id="formCurso">
 
                     <div class="modal-body">
 
-                        <!-- ID del curso -->
+                        <!-- ID reservado para edición -->
                         <input
                             type="hidden"
                             id="idCurso">
-
 
                         <!-- Código -->
                         <div class="mb-3">
@@ -829,7 +799,7 @@ require_once __DIR__ . "/../api/proteger.php";
                                 for="codigoCurso"
                                 class="form-label">
 
-                                Código
+                                Código del curso
 
                             </label>
 
@@ -838,12 +808,12 @@ require_once __DIR__ . "/../api/proteger.php";
                                 id="codigoCurso"
                                 class="form-control"
                                 placeholder="SC502"
+                                maxlength="20"
                                 required>
 
                         </div>
 
-
-                        <!-- Nombre del curso -->
+                        <!-- Nombre -->
                         <div class="mb-3">
 
                             <label
@@ -858,52 +828,80 @@ require_once __DIR__ . "/../api/proteger.php";
                                 type="text"
                                 id="nombreCurso"
                                 class="form-control"
+                                maxlength="150"
                                 required>
 
                         </div>
 
-
-                        <!-- Docente -->
+                        <!-- Descripción -->
                         <div class="mb-3">
 
                             <label
-                                for="docenteCurso"
+                                for="descripcionCurso"
                                 class="form-label">
 
-                                Docente
+                                Descripción
 
                             </label>
 
-                            <select
-                                id="docenteCurso"
-                                class="form-select">
-                            </select>
+                            <textarea
+                                id="descripcionCurso"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Descripción del curso (opcional)">
+                            </textarea>
 
                         </div>
 
-
-                        <!-- Período académico -->
+                        <!-- Créditos -->
                         <div class="mb-3">
 
                             <label
-                                for="periodoCurso"
+                                for="creditosCurso"
                                 class="form-label">
 
-                                Período académico
+                                Créditos
 
                             </label>
 
-                            <select
-                                id="periodoCurso"
-                                class="form-select">
-                            </select>
+                            <input
+                                type="number"
+                                id="creditosCurso"
+                                class="form-control"
+                                min="1"
+                                step="1"
+                                placeholder="4"
+                                required>
 
                         </div>
+
+                        <!-- Estado -->
+                        <div class="form-check mb-3">
+
+                            <input
+                                type="checkbox"
+                                id="activoCurso"
+                                class="form-check-input"
+                                checked>
+
+                            <label
+                                for="activoCurso"
+                                class="form-check-label">
+
+                                Curso activo
+
+                            </label>
+
+                        </div>
+
+                        <p class="form-text mb-0">
+                            El docente, el grupo y el período
+                            académico se asignarán después
+                            en Gestión de grupos.
+                        </p>
 
                     </div>
 
-
-                    <!-- Botones -->
                     <div class="modal-footer">
 
                         <button
@@ -917,9 +915,10 @@ require_once __DIR__ . "/../api/proteger.php";
 
                         <button
                             type="submit"
-                            class="btn btn-primary">
+                            class="btn btn-primary"
+                            id="btnGuardarCurso">
 
-                            Guardar cambios
+                            Guardar curso
 
                         </button>
 
@@ -933,24 +932,17 @@ require_once __DIR__ . "/../api/proteger.php";
 
     </div>
 
+    <!-- =====================================
+         SCRIPTS
+         ===================================== -->
 
-    <!-- =========================================
-         JAVASCRIPT
-         ========================================= -->
-
-    <!-- Bootstrap -->
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
     </script>
 
-    <!-- Funcionalidades del administrador -->
     <script src="../js/administrador.js"></script>
 
-
-    <!-- =========================================
-         MENÚ LATERAL RESPONSIVE
-         ========================================= -->
-
+    <!-- Menú lateral responsive -->
     <script>
 
         const botonMenuAdmin =
@@ -959,8 +951,6 @@ require_once __DIR__ . "/../api/proteger.php";
         const menuLateralAdmin =
             document.getElementById("menuLateral");
 
-
-        // Abrir o cerrar el menú.
         if (botonMenuAdmin && menuLateralAdmin) {
 
             botonMenuAdmin.addEventListener(
@@ -981,12 +971,9 @@ require_once __DIR__ . "/../api/proteger.php";
                         "aria-label",
                         abierto ? "Cerrar menú" : "Abrir menú"
                     );
-
                 }
             );
 
-
-            // Cerrar menú al seleccionar una sección.
             document.querySelectorAll(
                 ".enlace-menu"
             ).forEach(function (enlace) {
@@ -1009,8 +996,6 @@ require_once __DIR__ . "/../api/proteger.php";
                             "Abrir menú"
                         );
 
-
-                        // Actualizar elemento activo.
                         document.querySelectorAll(
                             ".enlace-menu"
                         ).forEach(function (item) {
@@ -1018,19 +1003,15 @@ require_once __DIR__ . "/../api/proteger.php";
                             item.removeAttribute(
                                 "aria-current"
                             );
-
                         });
 
                         enlace.setAttribute(
                             "aria-current",
                             "page"
                         );
-
                     }
                 );
-
             });
-
         }
 
     </script>
