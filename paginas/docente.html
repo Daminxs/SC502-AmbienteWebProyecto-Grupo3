@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Docente</title>
+    <link rel="stylesheet" href="../css/docente.css">
+    <script src="../js/docente.js" defer></script>
+</head>
+<body>
+
+    <div class="contenedor">
+
+        <aside class="barra-lateral">
+            <div class="logo">
+                <h2>Campus Virtual</h2>
+                <p>Panel del docente</p>
+            </div>
+
+            <nav class="menu">
+                <a href="#" class="enlace activo" data-seccion="inicio">Inicio</a>
+                <a href="#" class="enlace" data-seccion="cursos">Mis cursos</a>
+                <a href="#" class="enlace" data-seccion="materiales">Materiales</a>
+                <a href="#" class="enlace" data-seccion="asignaciones">Asignaciones</a>
+                <a href="#" class="enlace" data-seccion="entregas">Entregas</a>
+                <a href="#" class="enlace" data-seccion="calificaciones">Calificaciones</a>
+                <a href="#" class="enlace" data-seccion="calendario">Calendario</a>
+                <a href="#" class="enlace" data-seccion="notificaciones">Notificaciones</a>
+            </nav>
+        </aside>
+
+        <main class="contenido-principal">
+
+            <header class="encabezado">
+                <div>
+                    <h1>Panel del docente</h1>
+                    <p>Bienvenido al espacio de gestión académica.</p>
+                </div>
+                <div class="informacion-docente">
+                    <span>Docente</span>
+                </div>
+            </header>
+
+            <!-- INICIO -->
+            <section id="inicio" class="seccion activa">
+                <h2>Resumen general</h2>
+                <p>Aca podés consultar tus cursos y mantener al día las actividades académicas.</p>
+
+                <div class="tarjetas">
+                    <article class="tarjeta">
+                        <h3>Mis cursos</h3>
+                        <p>3</p>
+                        <span>Cursos asignados</span>
+                    </article>
+
+                    <article class="tarjeta">
+                        <h3>Asignaciones</h3>
+                        <p>0</p>
+                        <span>Actividades pendientes</span>
+                    </article>
+
+                    <article class="tarjeta">
+                        <h3>Entregas</h3>
+                        <p>0</p>
+                        <span>Trabajos pendientes de revisar</span>
+                    </article>
+                </div>
+
+                <div class="panel">
+                    <h3>Actividad académica</h3>
+                    <p>En este apartado se mostrarán las actividades recientes de tus cursos.</p>
+                </div>
+            </section>
+
+            <!-- CURSOS -->
+            <section id="cursos" class="seccion">
+                <h2>Mis cursos</h2>
+                <p>Estos son los cursos asignados para el período académico.</p>
+
+                <div class="tarjetas cursos">
+                    <article class="tarjeta curso">
+                        <h3>Programación Avanzada</h3>
+                        <p>Curso de desarrollo y programación de aplicaciones.</p>
+                        <span>Curso asignado</span>
+                    </article>
+
+                    <article class="tarjeta curso">
+                        <h3>Bases de Datos</h3>
+                        <p>Curso relacionado con el diseño y la gestión de bases de datos.</p>
+                        <span>Curso asignado</span>
+                    </article>
+
+                    <article class="tarjeta curso">
+                        <h3>Administración de Proyectos</h3>
+                        <p>Curso enfocado en la planificación y gestión de proyectos.</p>
+                        <span>Curso asignado</span>
+                    </article>
+                </div>
+            </section>
+
+            <!-- MATERIALES -->
+            <section id="materiales" class="seccion">
+                <h2>Materiales académicos</h2>
+                <p>En este espacio podrás organizar y publicar los materiales de tus cursos.</p>
+
+                <div class="panel">
+                    <h3>Publicar material</h3>
+
+                    <form id="formMaterial">
+                        <label for="nombreMaterial">Nombre del material</label>
+                        <input type="text" id="nombreMaterial" placeholder="Escribí el nombre del material">
+
+                        <label for="cursoMaterial">Curso</label>
+                        <select id="cursoMaterial">
+                            <option value="">Seleccioná un curso</option>
+                            <option>Programación Avanzada</option>
+                            <option>Bases de Datos</option>
+                            <option>Administración de Proyectos</option>
+                        </select>
+
+                        <label for="descripcionMaterial">Descripción</label>
+                        <textarea id="descripcionMaterial" placeholder="Agregá una descripción"></textarea>
+
+                        <button type="submit">Publicar material</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ASIGNACIONES -->
+            <section id="asignaciones" class="seccion">
+                <h2>Asignaciones</h2>
+                <p>Creá actividades para que los estudiantes puedan consultar las instrucciones y fechas de entrega.</p>
+
+                <div class="panel">
+                    <h3>Nueva asignación</h3>
+
+                    <form id="formAsignacion">
+                        <label for="tituloAsignacion">Título</label>
+                        <input type="text" id="tituloAsignacion" placeholder="Nombre de la asignación">
+
+                        <label for="cursoAsignacion">Curso</label>
+                        <select id="cursoAsignacion">
+                            <option value="">Seleccioná un curso</option>
+                            <option>Programación Avanzada</option>
+                            <option>Bases de Datos</option>
+                            <option>Administración de Proyectos</option>
+                        </select>
+
+                        <label for="instrucciones">Instrucciones</label>
+                        <textarea id="instrucciones" placeholder="Describí lo que deben realizar los estudiantes"></textarea>
+
+                        <label for="fechaEntrega">Fecha de entrega</label>
+                        <input type="date" id="fechaEntrega">
+
+                        <label for="porcentaje">Porcentaje de la nota</label>
+                        <input type="number" id="porcentaje" min="0" max="100" placeholder="Ejemplo: 20">
+
+                        <button type="submit">Crear asignación</button>
+                    </form>
+                </div>
+
+                <div id="listaAsignaciones" class="panel">
+                    <h3>Asignaciones creadas</h3>
+                    <p>No hay asignaciones registradas.</p>
+                </div>
+            </section>
+
+            <!-- ENTREGAS -->
+            <section id="entregas" class="seccion">
+                <h2>Entregas de estudiantes</h2>
+                <p>Consultá los trabajos presentados por los estudiantes.</p>
+
+                <div class="panel">
+                    <p>En este apartado se mostrarán las entregas recibidas y su estado de revisión.</p>
+                </div>
+            </section>
+
+            <!-- CALIFICACIONES -->
+            <section id="calificaciones" class="seccion">
+                <h2>Calificaciones</h2>
+                <p>Registrá las notas y los comentarios de las actividades entregadas.</p>
+
+                <div class="panel">
+                    <p>En este apartado se podrán consultar y registrar las calificaciones de los estudiantes.</p>
+                </div>
+            </section>
+
+            <!-- CALENDARIO -->
+            <section id="calendario" class="seccion">
+                <h2>Calendario académico</h2>
+                <p>Consultá las fechas importantes de tus cursos.</p>
+
+                <div class="panel">
+                    <p>En este apartado se mostrarán las fechas de entrega, evaluaciones y actividades académicas.</p>
+                </div>
+            </section>
+
+            <!-- NOTIFICACIONES -->
+            <section id="notificaciones" class="seccion">
+                <h2>Notificaciones</h2>
+                <p>Consultá los avisos y recordatorios relacionados con tus cursos.</p>
+
+                <div class="panel">
+                    <p>No tenés notificaciones nuevas.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
