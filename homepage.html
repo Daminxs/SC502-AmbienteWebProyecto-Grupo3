@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Campus Virtual Universitario. Consulta la información y accede a los servicios académicos de nuestra plataforma.">
+
+    <title>Inicio | Campus Virtual Universitario</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <!-- CSS principal -->
+    <link rel="stylesheet" href="./css/homepage.css">
+
+</head>
+
+<body class="pagina-inicio">
+
+    <!-- =========================================
+         ACCESIBILIDAD
+         ========================================= -->
+
+    <a class="saltar-contenido" href="#contenido">
+        Saltar al contenido
+    </a>
+
+    <!-- =========================================
+         BARRA DE NAVEGACIÓN
+         ========================================= -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark barra-navegacion">
+
+        <div class="container">
+
+            <!-- Nombre del campus -->
+            <a class="navbar-brand" href="./homepage.html">
+                <i class="bi bi-mortarboard-fill"
+                   aria-hidden="true"></i>
+
+                Campus Virtual
+            </a>
+
+            <!-- Menú responsive -->
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menuNavegacion"
+                aria-controls="menuNavegacion"
+                aria-expanded="false"
+                aria-label="Abrir menú">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <!-- Opciones del menú -->
+            <div class="collapse navbar-collapse" id="menuNavegacion">
+
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">
+                            Inicio
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#informacion">
+                            Información
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#servicios">
+                            Servicios
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contacto">
+                            Contacto
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-3">
+
+                        <!-- Ruta real del login -->
+                        <a class="btn btn-acceso"
+                           href="./HTML/index.html">
+
+                            <i class="bi bi-box-arrow-in-right"
+                               aria-hidden="true"></i>
+
+                            Iniciar sesión
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- =========================================
+         CONTENIDO PRINCIPAL
+         ========================================= -->
+
+    <main id="contenido">
+
+        <!-- =====================================
+             PORTADA PRINCIPAL
+             ===================================== -->
+
+        <section id="inicio" class="portada">
+
+            <div class="container">
+
+                <div class="contenido-portada">
+
+                    <span class="etiqueta-portada">
+                        BIENVENIDO AL CAMPUS VIRTUAL
+                    </span>
+
+                    <h1>
+                        Tu futuro comienza con una
+                        educación de calidad.
+                    </h1>
+
+                    <p>
+                        Un espacio universitario diseñado
+                        para acompañar tu formación académica,
+                        organizar tus cursos y facilitar
+                        el acceso a tus recursos educativos.
+                    </p>
+
+                    <!-- Acceso al login -->
+                    <a href="./HTML/index.html"
+                       class="btn btn-portada">
+
+                        Acceder al Campus Virtual
+
+                        <i class="bi bi-arrow-right"
+                           aria-hidden="true"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =====================================
+             INFORMACIÓN GENERAL
+             ===================================== -->
+
+        <section id="informacion" class="seccion-informacion">
+
+            <div class="container">
+
+                <div class="encabezado-seccion">
+
+                    <span class="etiqueta">
+                        NUESTRA UNIVERSIDAD
+                    </span>
+
+                    <h2>
+                        Un espacio para aprender y crecer.
+                    </h2>
+
+                    <p>
+                        Nuestro Campus Virtual facilita
+                        el acceso a información académica
+                        y herramientas educativas para
+                        estudiantes, docentes y administradores.
+                    </p>
+
+                    <p>
+                        A través de una plataforma organizada,
+                        los usuarios podrán gestionar sus cursos,
+                        consultar actividades, revisar
+                        calificaciones y dar seguimiento
+                        a su proceso de aprendizaje.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =====================================
+             SERVICIOS DEL CAMPUS
+             ===================================== -->
+
+        <section id="servicios" class="seccion-servicios">
+
+            <div class="container">
+
+                <div class="encabezado-seccion">
+
+                    <span class="etiqueta">
+                        SERVICIOS ACADÉMICOS
+                    </span>
+
+                    <h2>
+                        Todo lo que necesitás para tu
+                        vida académica.
+                    </h2>
+
+                    <p>
+                        Nuestra plataforma reúne las
+                        herramientas principales para
+                        facilitar la gestión y el
+                        seguimiento académico.
+                    </p>
+
+                </div>
+
+                <div class="row g-4">
+
+                    <!-- Cursos -->
+                    <div class="col-md-6 col-lg-4">
+
+                        <article class="tarjeta-servicio">
+
+                            <div class="servicio-icono">
+                                <i class="bi bi-book"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Mis cursos</h3>
+
+                            <p>
+                                Consultá tus cursos matriculados
+                                y accedé a la información
+                                correspondiente a cada asignatura.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                    <!-- Materiales -->
+                    <div class="col-md-6 col-lg-4">
+
+                        <article class="tarjeta-servicio">
+
+                            <div class="servicio-icono">
+                                <i class="bi bi-folder2-open"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Materiales académicos</h3>
+
+                            <p>
+                                Encontrá recursos, lecturas
+                                e instrucciones publicados
+                                por los docentes de tus cursos.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                    <!-- Actividades -->
+                    <div class="col-md-6 col-lg-4">
+
+                        <article class="tarjeta-servicio">
+
+                            <div class="servicio-icono">
+                                <i class="bi bi-clipboard-check"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Actividades</h3>
+
+                            <p>
+                                Revisá tus tareas, fechas
+                                de entrega y actividades
+                                pendientes de cada curso.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                    <!-- Calificaciones -->
+                    <div class="col-md-6 col-lg-4">
+
+                        <article class="tarjeta-servicio">
+
+                            <div class="servicio-icono">
+                                <i class="bi bi-bar-chart"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Calificaciones</h3>
+
+                            <p>
+                                Consultá tus resultados
+                                académicos y el progreso
+                                de las actividades evaluadas.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                    <!-- Matrícula -->
+                    <div class="col-md-6 col-lg-4">
+
+                        <article class="tarjeta-servicio">
+
+                            <div class="servicio-icono">
+                                <i class="bi bi-calendar-check"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Matrícula</h3>
+
+                            <p>
+                                Gestioná la inscripción
+                                de cursos y consultá
+                                los horarios disponibles
+                                para cada período académico.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                    <!-- Gestión académica -->
+                    <div class="col-md-6 col-lg-4">
+
+                        <article class="tarjeta-servicio">
+
+                            <div class="servicio-icono">
+                                <i class="bi bi-people"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <h3>Gestión académica</h3>
+
+                            <p>
+                                Administrá usuarios, roles,
+                                cursos y otros recursos
+                                según los permisos asignados.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =====================================
+             ACCESO AL SISTEMA
+             ===================================== -->
+
+        <section class="seccion-acceso">
+
+            <div class="container text-center">
+
+                <span class="etiqueta">
+                    ACCESO A LA PLATAFORMA
+                </span>
+
+                <h2>
+                    Ingresá a tu Campus Virtual.
+                </h2>
+
+                <p>
+                    Accedé con tu cuenta para
+                    consultar tus cursos, actividades
+                    y servicios académicos.
+                </p>
+
+                <a href="./HTML/index.html"
+                   class="btn btn-portada">
+
+                    Iniciar sesión
+
+                    <i class="bi bi-arrow-right"
+                       aria-hidden="true"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- =========================================
+         PIE DE PÁGINA
+         ========================================= -->
+
+    <footer id="contacto">
+
+        <div class="container">
+
+            <div class="footer-contenido">
+
+                <div>
+
+                    <h3>
+                        Campus Virtual Universitario
+                    </h3>
+
+                    <p>
+                        Un espacio para tu desarrollo
+                        académico y profesional.
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <h4>Información</h4>
+
+                    <p>
+                        San José, Costa Rica
+                    </p>
+
+                    <p>
+                        Proyecto académico · Grupo 3
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="footer-inferior">
+
+                <p>
+                    © 2026 Campus Virtual Universitario
+                </p>
+
+                <p>
+                    Proyecto de Ambiente Web Cliente-Servidor
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- =========================================
+         BOOTSTRAP JAVASCRIPT
+         ========================================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+</body>
+
+</html>
