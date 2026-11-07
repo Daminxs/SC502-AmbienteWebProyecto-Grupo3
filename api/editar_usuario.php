@@ -4,12 +4,17 @@
    CAMPUS VIRTUAL - EDITAR USUARIO
    ========================================= */
 
+// ==========================================
+// 1. CONFIGURAR RESPUESTA JSON
+// ==========================================
+
 header("Content-Type: application/json; charset=utf-8");
 header("Cache-Control: no-store");
 
-session_start();
+// ==========================================
+// 2. FUNCIÓN PARA RESPONDER
+// ==========================================
 
-// Responder al navegador con JSON.
 function responder($codigo, $exito, $mensaje)
 {
     http_response_code($codigo);
@@ -22,84 +27,204 @@ function responder($codigo, $exito, $mensaje)
     exit;
 }
 
-// Solo permitir solicitudes POST.
+// ==========================================
+// 3. VALIDAR MÉTODO HTTP
+// ==========================================
+
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+
     header("Allow: POST");
-    responder(405, false, "Método no permitido.");
+
+    responder(
+        405,
+        false,
+        "Método no permitido."
+    );
 }
 
-// Verificar que exista una sesión.
-if (empty($_SESSION["id_usuario"])) {
-    responder(401, false, "Debe iniciar sesión.");
-}
+// ==========================================
+// 4. VERIFICAR ADMINISTRADOR
+// ==========================================
 
-// Verificar que sea administrador.
-$rolSesion = strtolower(trim($_SESSION["rol"] ?? ""));
+// El archivo verificar_admin.php comprueba:
+// - Sesión iniciada.
+// - Usuario existente en MySQL.
+// - Cuenta activa.
+// - Rol de administrador vigente.
+//
+// También proporciona la conexión $pdo.
 
-if ($rolSesion !== "administrador") {
-    responder(403, false, "No tiene permisos para editar usuarios.");
-}
+require_once __DIR__ . "/verificar_admin.php";
 
-// Aceptar únicamente solicitudes JSON desde nuestra aplicación.
+// ==========================================
+// 5. VALIDAR TIPO DE SOLICITUD
+// ==========================================
+
 $tipoContenido = $_SERVER["CONTENT_TYPE"] ?? "";
-$solicitudAjax = $_SERVER["HTTP_X_REQUESTED_WITH"] ?? "";
+
+$solicitudAjax =
+    $_SERVER["HTTP_X_REQUESTED_WITH"] ?? "";
 
 if (
     stripos($tipoContenido, "application/json") === false ||
     $solicitudAjax !== "XMLHttpRequest"
 ) {
-    responder(415, false, "Solicitud no permitida.");
+
+    responder(
+        415,
+        false,
+        "Solicitud no permitida."
+    );
 }
 
-// Obtener los datos enviados.
+// ==========================================
+// 6. RECIBIR LOS DATOS
+// ==========================================
+
 $datos = json_decode(
     file_get_contents("php://input"),
     true
 );
 
 if (!is_array($datos)) {
-    responder(400, false, "Los datos enviados no son válidos.");
+
+    responder(
+        400,
+        false,
+        "Los datos enviados no son válidos."
+    );
 }
 
-// Obtener y validar el ID.
+// ==========================================
+// 7. VALIDAR IDENTIFICADOR
+// ==========================================
+
 $idUsuario = filter_var(
     $datos["id"] ?? null,
     FILTER_VALIDATE_INT,
-    ["options" => ["min_range" => 1]]
+    [
+        "options" => [
+            "min_range" => 1
+        ]
+    ]
 );
 
-if ($idUsuario === false) {
-    responder(400, false, "El ID del usuario no es válido.");
+if ($idUsuario === false || $idUsuario === null) {
+
+    responder(
+        400,
+        false,
+        "El identificador del usuario no es válido."
+    );
 }
 
-// Obtener información del formulario.
-$nombre = trim($datos["nombre"] ?? "");
-$apellidos = trim($datos["apellidos"] ?? "");
-$correo = strtolower(trim($datos["correo"] ?? ""));
-$rol = trim($datos["rol"] ?? "");
-$password = $datos["password"] ?? "";
+// ==========================================
+// 8. VALIDAR TIPOS DE DATOS
+// ==========================================
 
-// Validar campos obligatorios.
-if (
-    $nombre === "" ||
-    $apellidos === "" ||
-    $correo === "" ||
-    $rol === "" ||
-    !is_string($password)
-) {
-    responder(400, false, "Complete los campos obligatorios.");
-}
+$campos = [
+    "nombre",
+    "apellidos",
+    "correo",
+    "rol"
+];
 
-// Validar correo.
-if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-    responder(400, false, "El correo electrónico no es válido.");
+foreach ($campos as $campo) {
+
+    if (
+        !isset($datos[$campo]) ||
+        !is_string($datos[$campo])
+    ) {
+
+        responder(
+            400,
+            false,
+            "Los datos del formulario no son válidos."
+        );
+    }
 }
 
 // La contraseña es opcional al editar.
 if (
-    $password !== "" &&
-    (strlen($password) < 8 || strlen($password) > 72)
+    isset($datos["password"]) &&
+    !is_string($datos["password"])
 ) {
+
+    responder(
+        400,
+        false,
+        "La contraseña no tiene un formato válido."
+    );
+}
+
+// ==========================================
+// 9. LIMPIAR INFORMACIÓN
+// ==========================================
+
+$nombre = trim($datos["nombre"]);
+
+$apellidos = trim($datos["apellidos"]);
+
+$correo = strtolower(
+    trim($datos["correo"])
+);
+
+$rol = trim($datos["rol"]);
+
+$password = $datos["password"] ?? "";
+
+// ==========================================
+// 10. VALIDAR CAMPOS OBLIGATORIOS
+// ==========================================
+
+if (
+    $nombre === "" ||
+    $apellidos === "" ||
+    $correo === "" ||
+    $rol === ""
+) {
+
+    responder(
+        400,
+        false,
+        "Complete todos los campos obligatorios."
+    );
+}
+
+// ==========================================
+// 11. VALIDAR CORREO
+// ==========================================
+
+if (!filter_var(
+    $correo,
+    FILTER_VALIDATE_EMAIL
+)) {
+
+    responder(
+        400,
+        false,
+        "El correo electrónico no es válido."
+    );
+}
+
+// ==========================================
+// 12. VALIDAR CONTRASEÑA OPCIONAL
+// ==========================================
+
+// Si está vacía, se conserva la contraseña.
+//
+// Si se proporciona una nueva, debe tener
+// entre 8 y 72 bytes para mantener
+// compatibilidad con el formulario actual.
+
+if (
+    $password !== "" &&
+    (
+        strlen($password) < 8 ||
+        strlen($password) > 72
+    )
+) {
+
     responder(
         400,
         false,
@@ -107,22 +232,43 @@ if (
     );
 }
 
-// Verificar el rol seleccionado.
+// ==========================================
+// 13. VALIDAR ROL
+// ==========================================
+
 $rolesPermitidos = [
     "Administrador",
     "Docente",
     "Estudiante"
 ];
 
-if (!in_array($rol, $rolesPermitidos, true)) {
-    responder(400, false, "El rol seleccionado no es válido.");
+if (!in_array(
+    $rol,
+    $rolesPermitidos,
+    true
+)) {
+
+    responder(
+        400,
+        false,
+        "El rol seleccionado no es válido."
+    );
 }
 
-// Evitar que el administrador cambie su propio rol.
+// ==========================================
+// 14. PROTEGER EL ROL DEL ADMINISTRADOR
+// ==========================================
+
+// Impedir que el administrador que está
+// utilizando el panel se quite a sí mismo
+// los permisos de administrador.
+
 if (
-    (int) $idUsuario === (int) $_SESSION["id_usuario"] &&
+    (int) $idUsuario ===
+        (int) $_SESSION["id_usuario"] &&
     $rol !== "Administrador"
 ) {
+
     responder(
         403,
         false,
@@ -130,39 +276,63 @@ if (
     );
 }
 
+// ==========================================
+// 15. ACTUALIZAR USUARIO EN MYSQL
+// ==========================================
+
 try {
 
-    // Conectarse a MySQL.
-    require_once __DIR__ . "/conexion.php";
+    // La conexión $pdo ya fue creada por
+    // verificar_admin.php.
 
-    // Verificar que el usuario exista.
+    // ======================================
+    // 16. VERIFICAR USUARIO EXISTENTE
+    // ======================================
+
     $sqlUsuario = "
-        SELECT id_usuario
+        SELECT
+            id_usuario
         FROM USUARIOS
         WHERE id_usuario = :id_usuario
         LIMIT 1
     ";
 
-    $consultaUsuario = $pdo->prepare($sqlUsuario);
+    $consultaUsuario = $pdo->prepare(
+        $sqlUsuario
+    );
 
     $consultaUsuario->execute([
         ":id_usuario" => $idUsuario
     ]);
 
     if (!$consultaUsuario->fetch()) {
-        responder(404, false, "El usuario no existe.");
+
+        responder(
+            404,
+            false,
+            "El usuario que intenta editar no existe."
+        );
     }
 
-    // Verificar que el correo no esté asignado a otro usuario.
+    // ======================================
+    // 17. COMPROBAR CORREO DUPLICADO
+    // ======================================
+
+    // El correo puede pertenecer al mismo
+    // usuario, pero no a uno diferente.
+
     $sqlCorreo = "
-        SELECT id_usuario
+        SELECT
+            id_usuario
         FROM USUARIOS
         WHERE LOWER(correo) = :correo
           AND id_usuario <> :id_usuario
         LIMIT 1
     ";
 
-    $consultaCorreo = $pdo->prepare($sqlCorreo);
+    $consultaCorreo = $pdo->prepare(
+        $sqlCorreo
+    );
 
     $consultaCorreo->execute([
         ":correo" => $correo,
@@ -170,18 +340,29 @@ try {
     ]);
 
     if ($consultaCorreo->fetch()) {
-        responder(409, false, "El correo ya pertenece a otro usuario.");
+
+        responder(
+            409,
+            false,
+            "El correo electrónico ya pertenece a otro usuario."
+        );
     }
 
-    // Obtener el ID del rol.
+    // ======================================
+    // 18. OBTENER ID DEL ROL
+    // ======================================
+
     $sqlRol = "
-        SELECT id_rol
+        SELECT
+            id_rol
         FROM ROLES
         WHERE descripcion = :rol
         LIMIT 1
     ";
 
-    $consultaRol = $pdo->prepare($sqlRol);
+    $consultaRol = $pdo->prepare(
+        $sqlRol
+    );
 
     $consultaRol->execute([
         ":rol" => $rol
@@ -190,10 +371,18 @@ try {
     $idRol = $consultaRol->fetchColumn();
 
     if (!$idRol) {
-        responder(400, false, "El rol no existe en MySQL.");
+
+        responder(
+            400,
+            false,
+            "El rol seleccionado no existe en MySQL."
+        );
     }
 
-    // Actualizar datos básicos del usuario.
+    // ======================================
+    // 19. PREPARAR LA ACTUALIZACIÓN
+    // ======================================
+
     $sqlActualizar = "
         UPDATE USUARIOS
         SET
@@ -201,41 +390,89 @@ try {
             apellidos = :apellidos,
             correo = :correo,
             id_rol = :id_rol
-        WHERE id_usuario = :id_usuario
     ";
 
     $parametros = [
         ":nombre" => $nombre,
         ":apellidos" => $apellidos,
         ":correo" => $correo,
-        ":id_rol" => $idRol,
-        ":id_usuario" => $idUsuario
+        ":id_rol" => (int) $idRol,
+        ":id_usuario" => (int) $idUsuario
     ];
 
-    // Solo cambiar la contraseña si se ingresó una nueva.
+    // ======================================
+    // 20. ACTUALIZAR CONTRASEÑA SI APLICA
+    // ======================================
+
     if ($password !== "") {
 
-        $sqlActualizar = "
-            UPDATE USUARIOS
-            SET
-                nombre = :nombre,
-                apellidos = :apellidos,
-                correo = :correo,
-                id_rol = :id_rol,
-                contrasena_hash = :contrasena_hash
-            WHERE id_usuario = :id_usuario
-        ";
-
-        $parametros[":contrasena_hash"] = password_hash(
+        // Generar hash seguro.
+        $passwordHash = password_hash(
             $password,
             PASSWORD_DEFAULT
         );
+
+        if ($passwordHash === false) {
+
+            throw new RuntimeException(
+                "No se pudo generar el hash de contraseña."
+            );
+        }
+
+        // Agregar campo de contraseña al UPDATE.
+        $sqlActualizar .= ",
+            contrasena_hash = :contrasena_hash
+        ";
+
+        $parametros[":contrasena_hash"] =
+            $passwordHash;
     }
 
-    // Ejecutar la actualización.
-    $consultaActualizar = $pdo->prepare($sqlActualizar);
+    // ======================================
+    // 21. COMPLETAR CONSULTA SQL
+    // ======================================
 
-    $consultaActualizar->execute($parametros);
+    $sqlActualizar .= "
+        WHERE id_usuario = :id_usuario
+    ";
+
+    // ======================================
+    // 22. EJECUTAR ACTUALIZACIÓN
+    // ======================================
+
+    $consultaActualizar = $pdo->prepare(
+        $sqlActualizar
+    );
+
+    $consultaActualizar->execute(
+        $parametros
+    );
+
+    // ======================================
+    // 23. ACTUALIZAR SESIÓN PROPIA
+    // ======================================
+
+    // Si el administrador modifica sus
+    // propios datos, actualizar la sesión.
+
+    if (
+        (int) $idUsuario ===
+        (int) $_SESSION["id_usuario"]
+    ) {
+
+        $_SESSION["usuario"] = $correo;
+
+        $_SESSION["nombre"] = trim(
+            $nombre . " " . $apellidos
+        );
+
+        // El administrador conserva su rol.
+        $_SESSION["rol"] = "administrador";
+    }
+
+    // ======================================
+    // 24. RESPUESTA EXITOSA
+    // ======================================
 
     responder(
         200,
@@ -245,9 +482,15 @@ try {
 
 } catch (PDOException $error) {
 
-    error_log($error->getMessage());
+    // Guardar detalles técnicos en el servidor.
+    error_log(
+        "Error al editar usuario: " .
+        $error->getMessage()
+    );
 
+    // Conflicto con restricciones de MySQL.
     if ($error->getCode() === "23000") {
+
         responder(
             409,
             false,
@@ -263,7 +506,14 @@ try {
 
 } catch (Throwable $error) {
 
-    error_log($error->getMessage());
+    error_log(
+        "Error interno al editar usuario: " .
+        $error->getMessage()
+    );
 
-    responder(500, false, "Ocurrió un error interno.");
+    responder(
+        500,
+        false,
+        "Ocurrió un error interno."
+    );
 }

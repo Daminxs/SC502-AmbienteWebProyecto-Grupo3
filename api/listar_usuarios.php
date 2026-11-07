@@ -1,59 +1,53 @@
 <?php
 
+/* =========================================
+   CAMPUS VIRTUAL - LISTAR USUARIOS
+   ========================================= */
+
 // ==========================================
-// CAMPUS VIRTUAL - LISTAR USUARIOS
+// 1. CONFIGURAR RESPUESTA JSON
 // ==========================================
 
-// Respuesta en formato JSON.
 header("Content-Type: application/json; charset=utf-8");
 header("Cache-Control: no-store");
 
-// Iniciar la sesión.
-session_start();
+// ==========================================
+// 2. VALIDAR MÉTODO HTTP
+// ==========================================
 
-// Permitir únicamente solicitudes GET.
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
+
     header("Allow: GET");
+
     http_response_code(405);
 
     echo json_encode([
         "success" => false,
         "mensaje" => "Método no permitido."
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
 
     exit;
 }
 
-// Verificar que el usuario haya iniciado sesión.
-if (!isset($_SESSION["id_usuario"])) {
-    http_response_code(401);
+// ==========================================
+// 3. VERIFICAR ADMINISTRADOR
+// ==========================================
 
-    echo json_encode([
-        "success" => false,
-        "mensaje" => "Debe iniciar sesión."
-    ]);
+// Este archivo comprueba que:
+// - Existe una sesión.
+// - El usuario existe en MySQL.
+// - Su cuenta está activa.
+// - Su rol actual es Administrador.
+//
+// También establece la conexión $pdo.
 
-    exit;
-}
+require_once __DIR__ . "/verificar_admin.php";
 
-// Verificar que tenga el rol de administrador.
-$rol = strtolower(trim($_SESSION["rol"] ?? ""));
-
-if ($rol !== "administrador") {
-    http_response_code(403);
-
-    echo json_encode([
-        "success" => false,
-        "mensaje" => "No tiene permisos para consultar usuarios."
-    ]);
-
-    exit;
-}
+// ==========================================
+// 4. CONSULTAR USUARIOS DESDE MYSQL
+// ==========================================
 
 try {
-
-    // Conexión existente con MySQL.
-    require_once __DIR__ . "/conexion.php";
 
     // Obtener usuarios junto con sus roles.
     $sql = "
@@ -70,22 +64,38 @@ try {
         ORDER BY u.id_usuario ASC
     ";
 
-    // Preparar y ejecutar la consulta.
+    // Preparar la consulta SQL.
     $consulta = $pdo->prepare($sql);
+
+    // Ejecutar la consulta.
     $consulta->execute();
 
-    // Obtener los resultados.
-    $usuarios = $consulta->fetchAll(PDO::FETCH_ASSOC);
+    // Obtener todos los usuarios.
+    $usuarios = $consulta->fetchAll(
+        PDO::FETCH_ASSOC
+    );
 
-    // Convertir los tipos para JavaScript.
+    // ======================================
+    // 5. CONVERTIR DATOS PARA JAVASCRIPT
+    // ======================================
+
     foreach ($usuarios as &$usuario) {
+
+        // Convertir identificador a número.
         $usuario["id"] = (int) $usuario["id"];
+
+        // Convertir estado a booleano.
         $usuario["activo"] = (bool) $usuario["activo"];
     }
 
     unset($usuario);
 
-    // Respuesta exitosa.
+    // ======================================
+    // 6. DEVOLVER RESPUESTA EXITOSA
+    // ======================================
+
+    http_response_code(200);
+
     echo json_encode([
         "success" => true,
         "usuarios" => $usuarios
@@ -93,13 +103,19 @@ try {
 
 } catch (Throwable $error) {
 
-    // Registrar el error sin exponer detalles al navegador.
-    error_log($error->getMessage());
+    // Registrar el error técnico.
+    error_log(
+        "Error al listar usuarios: " .
+        $error->getMessage()
+    );
 
+    // No exponer detalles internos de MySQL.
     http_response_code(500);
 
     echo json_encode([
         "success" => false,
         "mensaje" => "No fue posible consultar los usuarios."
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
 }
+
+?>

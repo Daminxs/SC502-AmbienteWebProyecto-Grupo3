@@ -13,6 +13,7 @@ console.log("Panel de administración del Campus Virtual");
 const API_LISTAR_USUARIOS = "/api/listar_usuarios.php";
 const API_CREAR_USUARIO = "/api/crear_usuario.php";
 const API_EDITAR_USUARIO = "/api/editar_usuario.php";
+const API_CAMBIAR_ESTADO = "/api/cambiar_estado_usuario.php";
 
 // ==========================================
 // ROLES DEL SISTEMA
@@ -56,20 +57,19 @@ const periodos = [
 ];
 
 // ==========================================
-// USUARIOS - MYSQL
+// USUARIOS - BASE DE DATOS MYSQL
 // ==========================================
 
-// Los usuarios se obtienen desde la API PHP.
 let usuarios = [];
-
 let cargandoUsuarios = true;
 let errorUsuarios = "";
+let cambiandoEstadoUsuario = false;
 
 // ==========================================
-// CURSOS - DATOS DE DEMOSTRACIÓN
+// CURSOS - DATOS TEMPORALES
 // ==========================================
 
-// Esta sección se conectará con MySQL posteriormente.
+// Esta sección todavía no está conectada a MySQL.
 
 let cursos = [
     {
@@ -107,12 +107,10 @@ let siguienteId = 100;
 // FUNCIONES GENERALES
 // ==========================================
 
-// Obtener elementos HTML por ID.
 function elemento(id) {
     return document.getElementById(id);
 }
 
-// Evitar insertar HTML no seguro.
 function escapar(texto) {
     return String(texto ?? "")
         .replace(/&/g, "&amp;")
@@ -122,33 +120,28 @@ function escapar(texto) {
         .replace(/'/g, "&#39;");
 }
 
-// Nombre completo del usuario.
 function nombreCompleto(usuario) {
     return `${usuario.nombre} ${usuario.apellidos}`.trim();
 }
 
-// Buscar usuario por ID.
 function buscarUsuario(id) {
     return usuarios.find(
         usuario => usuario.id === Number(id)
     ) || null;
 }
 
-// Buscar curso por ID.
 function buscarCurso(id) {
     return cursos.find(
         curso => curso.id === Number(id)
     ) || null;
 }
 
-// Contar usuarios por rol.
 function contarPorRol(nombreRol) {
     return usuarios.filter(
         usuario => usuario.rol === nombreRol
     ).length;
 }
 
-// Mostrar estado del usuario o curso.
 function insigniaEstado(activo) {
 
     if (activo) {
@@ -159,7 +152,7 @@ function insigniaEstado(activo) {
 }
 
 // ==========================================
-// PETICIONES A LAS API PHP
+// SOLICITUDES A LAS API PHP
 // ==========================================
 
 async function solicitarAPI(url, opciones = {}) {
@@ -177,24 +170,26 @@ async function solicitarAPI(url, opciones = {}) {
         body: opciones.body
     });
 
-    // Sesión vencida.
+    // Verificar que la sesión continúe activa.
     if (respuesta.status === 401) {
+
         window.location.href = "/HTML/index.html";
         return null;
     }
 
-    // Leer JSON.
     let datos;
 
     try {
+
         datos = await respuesta.json();
+
     } catch (error) {
+
         throw new Error(
             "El servidor no devolvió una respuesta JSON válida."
         );
     }
 
-    // Verificar respuesta.
     if (!respuesta.ok || datos.success !== true) {
 
         throw new Error(
@@ -234,7 +229,6 @@ async function cargarUsuariosDesdeMySQL() {
             );
         }
 
-        // Convertir los registros obtenidos de MySQL.
         usuarios = datos.usuarios.map(function (usuario) {
 
             return {
@@ -262,7 +256,7 @@ async function cargarUsuariosDesdeMySQL() {
     } catch (error) {
 
         console.error(
-            "Error al consultar usuarios:",
+            "Error al cargar usuarios:",
             error
         );
 
@@ -275,7 +269,6 @@ async function cargarUsuariosDesdeMySQL() {
 
         cargandoUsuarios = false;
         actualizarTodo();
-
     }
 }
 
@@ -304,7 +297,7 @@ function cargarOpcionesRol() {
 }
 
 // ==========================================
-// CARGAR PERÍODOS
+// CARGAR OPCIONES DE PERÍODOS
 // ==========================================
 
 function cargarOpcionesPeriodo() {
@@ -359,7 +352,7 @@ function cargarOpcionesDocente() {
 }
 
 // ==========================================
-// ACTUALIZAR PANEL
+// ACTUALIZAR COMPONENTES DEL PANEL
 // ==========================================
 
 function actualizarTodo() {
@@ -379,25 +372,21 @@ function mostrarResumen() {
         curso => curso.activo
     ).length;
 
-    // Usuarios reales.
     if (elemento("totalUsuarios")) {
         elemento("totalUsuarios").textContent =
             usuarios.length;
     }
 
-    // Estudiantes reales.
     if (elemento("totalEstudiantes")) {
         elemento("totalEstudiantes").textContent =
             contarPorRol("Estudiante");
     }
 
-    // Docentes reales.
     if (elemento("totalDocentes")) {
         elemento("totalDocentes").textContent =
             contarPorRol("Docente");
     }
 
-    // Cursos temporales.
     if (elemento("totalCursos")) {
         elemento("totalCursos").textContent =
             cursosActivos;
@@ -444,7 +433,6 @@ function mostrarResumen() {
         return;
     }
 
-    // Mostrar los cuatro registros más recientes.
     const recientes = usuarios.slice(-4).reverse();
 
     for (const usuario of recientes) {
@@ -619,35 +607,27 @@ function abrirModalNuevoUsuario() {
     const modal = elemento("modalUsuario");
 
     if (!formulario || !modal) {
-
         console.error(
             "No se encontró el formulario de usuarios."
         );
-
         return;
     }
 
-    // Limpiar formulario.
     formulario.reset();
 
-    // Limpiar identificador.
     elemento("idUsuario").value = "";
 
-    // Actualizar título.
     elemento("tituloModalUsuario").textContent =
         "Nuevo usuario";
 
-    // Cargar roles.
     cargarOpcionesRol();
 
-    // Contraseña obligatoria para nuevos usuarios.
     const campoPassword = elemento("passwordUsuario");
 
     campoPassword.value = "";
     campoPassword.required = true;
     campoPassword.placeholder = "Mínimo 8 caracteres";
 
-    // Mostrar modal.
     bootstrap.Modal.getOrCreateInstance(
         modal
     ).show();
@@ -676,13 +656,10 @@ function abrirModalEditarUsuario(id) {
         return;
     }
 
-    // Limpiar el formulario.
     formulario.reset();
 
-    // Cargar el ID del usuario.
     elemento("idUsuario").value = usuario.id;
 
-    // Cargar los datos actuales.
     elemento("nombreUsuario").value = usuario.nombre;
 
     elemento("apellidosUsuario").value =
@@ -690,13 +667,10 @@ function abrirModalEditarUsuario(id) {
 
     elemento("correoUsuario").value = usuario.correo;
 
-    // Cargar opciones de roles.
     cargarOpcionesRol();
 
-    // Seleccionar el rol actual.
     elemento("rolUsuario").value = usuario.rol;
 
-    // Al editar, la contraseña es opcional.
     const campoPassword = elemento("passwordUsuario");
 
     campoPassword.value = "";
@@ -705,11 +679,9 @@ function abrirModalEditarUsuario(id) {
     campoPassword.placeholder =
         "Dejar en blanco para conservar la contraseña";
 
-    // Título del formulario.
     elemento("tituloModalUsuario").textContent =
         "Editar usuario";
 
-    // Mostrar el formulario.
     bootstrap.Modal.getOrCreateInstance(
         modal
     ).show();
@@ -721,12 +693,10 @@ function abrirModalEditarUsuario(id) {
 
 function validarPassword(password, obligatorio) {
 
-    // No cambiar contraseña durante la edición.
     if (!obligatorio && password === "") {
         return true;
     }
 
-    // El backend valida la longitud en bytes.
     const longitud = new TextEncoder()
         .encode(password).length;
 
@@ -757,24 +727,23 @@ async function guardarUsuario(event) {
         return;
     }
 
-    // Determinar si se crea o edita un usuario.
     const id = elemento("idUsuario").value.trim();
 
     const esEdicion = id !== "";
 
-    // Obtener los valores del formulario.
-    const nombre = elemento("nombreUsuario").value.trim();
+    const nombre = elemento("nombreUsuario")
+        .value.trim();
 
-    const apellidos =
-        elemento("apellidosUsuario").value.trim();
+    const apellidos = elemento("apellidosUsuario")
+        .value.trim();
 
-    const correo = elemento("correoUsuario").value.trim();
+    const correo = elemento("correoUsuario")
+        .value.trim();
 
     const password = elemento("passwordUsuario").value;
 
     const rol = elemento("rolUsuario").value;
 
-    // Validaciones del formulario.
     if (!formulario.reportValidity()) {
         return;
     }
@@ -790,12 +759,10 @@ async function guardarUsuario(event) {
         return;
     }
 
-    // Validar contraseña.
     if (!validarPassword(password, !esEdicion)) {
         return;
     }
 
-    // Preparar datos para PHP.
     const datosUsuario = {
         nombre: nombre,
         apellidos: apellidos,
@@ -804,7 +771,6 @@ async function guardarUsuario(event) {
         rol: rol
     };
 
-    // Seleccionar endpoint.
     let api = API_CREAR_USUARIO;
 
     if (esEdicion) {
@@ -825,13 +791,11 @@ async function guardarUsuario(event) {
         api = API_EDITAR_USUARIO;
     }
 
-    // Evitar envíos duplicados.
     botonGuardar.disabled = true;
     botonGuardar.textContent = "Guardando...";
 
     try {
 
-        // Enviar datos al backend.
         const datos = await solicitarAPI(api, {
 
             method: "POST",
@@ -848,48 +812,34 @@ async function guardarUsuario(event) {
             return;
         }
 
-        // Quitar el foco antes de cerrar.
         if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
         }
 
-        // Cerrar el modal.
         bootstrap.Modal.getOrCreateInstance(
             elemento("modalUsuario")
         ).hide();
 
-        // Limpiar el formulario.
         formulario.reset();
 
         elemento("idUsuario").value = "";
 
-        // Recargar los usuarios desde MySQL.
         const actualizado = await cargarUsuariosDesdeMySQL();
 
         if (actualizado) {
 
-            if (esEdicion) {
-
-                alert(
-                    "Usuario actualizado correctamente en MySQL."
-                );
-
-            } else {
-
-                alert(
-                    "Usuario registrado correctamente en MySQL."
-                );
-
-            }
+            alert(
+                esEdicion
+                    ? "Usuario actualizado correctamente en MySQL."
+                    : "Usuario registrado correctamente en MySQL."
+            );
 
         } else {
 
             alert(
-                "El servidor guardó los cambios, pero no fue " +
-                "posible actualizar la lista de usuarios. " +
-                "Recargá la página."
+                "Los cambios se guardaron, pero no fue posible " +
+                "actualizar la lista. Recargá la página."
             );
-
         }
 
     } catch (error) {
@@ -903,10 +853,105 @@ async function guardarUsuario(event) {
 
     } finally {
 
-        // Restaurar botón.
         botonGuardar.disabled = false;
         botonGuardar.textContent = "Guardar cambios";
+    }
+}
 
+// ==========================================
+// ACTIVAR Y DESACTIVAR USUARIOS EN MYSQL
+// ==========================================
+
+async function cambiarEstadoUsuario(id) {
+
+    if (cambiandoEstadoUsuario) {
+        return;
+    }
+
+    const usuario = buscarUsuario(id);
+
+    if (!usuario) {
+
+        alert("No se encontró el usuario.");
+        return;
+    }
+
+    // Obtener el estado contrario al actual.
+    const nuevoEstado = !usuario.activo;
+
+    const accion = nuevoEstado
+        ? "activar"
+        : "desactivar";
+
+    // Confirmar antes de modificar MySQL.
+    const confirmar = confirm(
+        `¿Desea ${accion} al usuario ` +
+        `"${nombreCompleto(usuario)}"?`
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    cambiandoEstadoUsuario = true;
+
+    try {
+
+        const datos = await solicitarAPI(
+            API_CAMBIAR_ESTADO,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+
+                body: JSON.stringify({
+                    id: usuario.id,
+                    activo: nuevoEstado
+                })
+            }
+        );
+
+        if (!datos) {
+            return;
+        }
+
+        // Volver a consultar la información real.
+        const actualizado = await cargarUsuariosDesdeMySQL();
+
+        if (actualizado) {
+
+            alert(
+                datos.mensaje ||
+                (
+                    nuevoEstado
+                        ? "Usuario activado correctamente."
+                        : "Usuario desactivado correctamente."
+                )
+            );
+
+        } else {
+
+            alert(
+                "El estado se modificó en MySQL, pero no fue " +
+                "posible actualizar la tabla. Recargá la página."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al cambiar estado de usuario:",
+            error
+        );
+
+        alert(error.message);
+
+    } finally {
+
+        cambiandoEstadoUsuario = false;
     }
 }
 
@@ -943,12 +988,14 @@ function gestionarAccionUsuario(event) {
 
         abrirModalEditarUsuario(id);
 
-    } else {
+    } else if (accion === "estado") {
 
-        // Activar, desactivar y eliminar se
-        // conectarán a MySQL posteriormente.
+        cambiarEstadoUsuario(id);
+
+    } else if (accion === "eliminar") {
+
+        // La eliminación se implementará después.
         avisarGestionUsuariosPendiente();
-
     }
 }
 
@@ -1039,7 +1086,6 @@ function mostrarRoles() {
         return;
     }
 
-    // Mostrar roles de los usuarios registrados.
     for (const usuario of usuarios) {
 
         let opciones = "";
@@ -1085,8 +1131,7 @@ function mostrarRoles() {
 // MOSTRAR CURSOS
 // ==========================================
 
-// Los cursos continúan funcionando con datos
-// de demostración en JavaScript.
+// Los cursos siguen siendo de demostración.
 
 function mostrarCursos() {
 
@@ -1105,9 +1150,7 @@ function mostrarCursos() {
     for (const curso of cursos) {
 
         const datos = (
-            curso.codigo +
-            " " +
-            curso.nombre
+            curso.codigo + " " + curso.nombre
         ).toLowerCase();
 
         if (!datos.includes(texto)) {
@@ -1316,7 +1359,6 @@ function guardarCurso(event) {
         return;
     }
 
-    // Comprobar que no se repita en un período.
     const repetido = cursos.some(function (curso) {
 
         return (
@@ -1328,13 +1370,14 @@ function guardarCurso(event) {
 
     if (repetido) {
 
-        alert("Ese código ya existe en el mismo período.");
+        alert(
+            "Ese código ya existe en el mismo período."
+        );
         return;
     }
 
     if (id === "") {
 
-        // Crear curso temporal.
         cursos.push({
             id: siguienteId,
             codigo: codigo,
@@ -1349,7 +1392,6 @@ function guardarCurso(event) {
 
     } else {
 
-        // Editar curso temporal.
         const curso = buscarCurso(Number(id));
 
         if (!curso) {
@@ -1364,7 +1406,6 @@ function guardarCurso(event) {
         curso.periodo = periodo;
     }
 
-    // Cerrar modal.
     if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
     }
@@ -1405,12 +1446,11 @@ function gestionarAccionCurso(event) {
     } else if (accion === "eliminar") {
 
         eliminarCurso(id);
-
     }
 }
 
 // ==========================================
-// CONFIGURAR EVENTOS DEL PANEL
+// CONFIGURAR EVENTOS
 // ==========================================
 
 function configurarEventos() {
@@ -1421,13 +1461,13 @@ function configurarEventos() {
         abrirModalNuevoUsuario
     );
 
-    // Crear o editar usuario.
+    // Crear y editar usuarios.
     elemento("formUsuario")?.addEventListener(
         "submit",
         guardarUsuario
     );
 
-    // Acciones de usuarios.
+    // Botones Editar, Activar y Desactivar.
     elemento("tablaUsuarios")?.addEventListener(
         "click",
         gestionarAccionUsuario
@@ -1441,13 +1481,13 @@ function configurarEventos() {
         }
     );
 
-    // Guardar curso temporal.
+    // Guardar cursos temporales.
     elemento("formCurso")?.addEventListener(
         "submit",
         guardarCurso
     );
 
-    // Acciones de cursos.
+    // Botones de cursos.
     elemento("tablaCursos")?.addEventListener(
         "click",
         gestionarAccionCurso
@@ -1459,7 +1499,7 @@ function configurarEventos() {
         mostrarUsuarios
     );
 
-    // Filtrar usuarios por rol.
+    // Filtrar por rol.
     elemento("filtroRol")?.addEventListener(
         "change",
         mostrarUsuarios
@@ -1471,7 +1511,7 @@ function configurarEventos() {
         mostrarCursos
     );
 
-    // Navegación del panel.
+    // Navegación.
     const enlacesMenu = document.querySelectorAll(
         "nav .nav-link"
     );
@@ -1495,21 +1535,17 @@ function configurarEventos() {
 
 function iniciarPanel() {
 
-    // Configurar eventos.
     configurarEventos();
 
-    // Cargar roles y períodos.
     cargarOpcionesRol();
     cargarOpcionesPeriodo();
 
-    // Mostrar componentes iniciales.
     actualizarTodo();
 
-    // Consultar usuarios desde MySQL.
     cargarUsuariosDesdeMySQL();
 }
 
-// Esperar a que cargue el documento.
+// Esperar a que cargue el HTML.
 if (document.readyState === "loading") {
 
     document.addEventListener(
@@ -1520,5 +1556,4 @@ if (document.readyState === "loading") {
 } else {
 
     iniciarPanel();
-
 }

@@ -1,12 +1,14 @@
+"use strict";
+
 /* =========================================
    CAMPUS VIRTUAL - INICIO DE SESIÓN
    ========================================= */
 
 console.log("Campus Virtual Universitario iniciado");
 
-// =========================================
-// ELEMENTOS DEL FORMULARIO
-// =========================================
+// ==========================================
+// 1. ELEMENTOS DEL FORMULARIO
+// ==========================================
 
 const formLogin = document.getElementById("formLogin");
 
@@ -14,15 +16,30 @@ const inputCorreo = document.getElementById("correoLogin");
 
 const inputPassword = document.getElementById("passwordLogin");
 
-const btnIniciarSesion = document.getElementById("btnIniciarSesion");
+const btnIniciarSesion = document.getElementById(
+    "btnIniciarSesion"
+);
 
-const btnMostrarPassword = document.getElementById("btnMostrarPassword");
+const btnMostrarPassword = document.getElementById(
+    "btnMostrarPassword"
+);
 
 const mensajeLogin = document.getElementById("mensajeLogin");
 
-// =========================================
-// MOSTRAR U OCULTAR CONTRASEÑA
-// =========================================
+// ==========================================
+// 2. MOSTRAR MENSAJES
+// ==========================================
+
+function mostrarMensaje(mensaje, tipo) {
+
+    mensajeLogin.textContent = mensaje;
+
+    mensajeLogin.className = "alert alert-" + tipo;
+}
+
+// ==========================================
+// 3. MOSTRAR Y OCULTAR CONTRASEÑA
+// ==========================================
 
 btnMostrarPassword.addEventListener("click", function () {
 
@@ -49,24 +66,81 @@ btnMostrarPassword.addEventListener("click", function () {
             "aria-label",
             "Mostrar contraseña"
         );
-
     }
-
 });
 
-// =========================================
-// VALIDAR EL INICIO DE SESIÓN
-// =========================================
+// ==========================================
+// 4. RESTAURAR BOTÓN DE INICIO DE SESIÓN
+// ==========================================
+
+function restaurarBotonLogin() {
+
+    btnIniciarSesion.disabled = false;
+
+    btnIniciarSesion.innerHTML = `
+        <i class="bi bi-box-arrow-in-right"></i>
+        Iniciar sesión
+    `;
+}
+
+// ==========================================
+// 5. REDIRECCIONAR SEGÚN ROL
+// ==========================================
+
+function redireccionarUsuario(rol) {
+
+    const rolNormalizado = String(rol ?? "")
+        .trim()
+        .toLowerCase();
+
+    if (rolNormalizado === "administrador") {
+
+        window.location.href = "./administrador.php";
+
+    } else if (rolNormalizado === "estudiante") {
+
+        window.location.href = "./estudiante.php";
+
+    } else if (rolNormalizado === "docente") {
+
+        mostrarMensaje(
+            "El panel docente todavía no está disponible.",
+            "warning"
+        );
+
+    } else {
+
+        mostrarMensaje(
+            "El usuario no tiene un rol válido.",
+            "danger"
+        );
+    }
+}
+
+// ==========================================
+// 6. VALIDAR INICIO DE SESIÓN
+// ==========================================
 
 formLogin.addEventListener("submit", async function (event) {
 
     event.preventDefault();
 
+    // Evitar envíos repetidos.
+    if (btnIniciarSesion.disabled) {
+        return;
+    }
+
+    // ======================================
+    // 7. OBTENER DATOS DEL FORMULARIO
+    // ======================================
+
     const correo = inputCorreo.value.trim();
 
     const password = inputPassword.value;
 
-    // Validar campos vacíos
+    // ======================================
+    // 8. VALIDAR CAMPOS OBLIGATORIOS
+    // ======================================
 
     if (correo === "" || password === "") {
 
@@ -78,7 +152,9 @@ formLogin.addEventListener("submit", async function (event) {
         return;
     }
 
-    // Validar formato del correo
+    // ======================================
+    // 9. VALIDAR CORREO ELECTRÓNICO
+    // ======================================
 
     if (!inputCorreo.checkValidity()) {
 
@@ -92,130 +168,146 @@ formLogin.addEventListener("submit", async function (event) {
         return;
     }
 
-    // Mostrar estado de procesamiento
+    // ======================================
+    // 10. MOSTRAR ESTADO DE PROCESAMIENTO
+    // ======================================
 
     btnIniciarSesion.disabled = true;
 
     btnIniciarSesion.innerHTML = `
-        <span class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"></span>
+        <span
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true">
+        </span>
         Validando...
     `;
 
+    // Ocultar mensajes anteriores.
+    mensajeLogin.textContent = "";
+    mensajeLogin.className = "alert d-none";
+
     try {
 
-        // =========================================
-        // CONEXIÓN CON PHP
-        // =========================================
+        // ==================================
+        // 11. ENVIAR DATOS A PHP
+        // ==================================
 
         const respuesta = await fetch("../api/login.php", {
 
             method: "POST",
 
-            headers: {
-                "Content-Type": "application/json"
-            },
-
             credentials: "same-origin",
+
+            cache: "no-store",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
 
             body: JSON.stringify({
                 correoLogin: correo,
                 passwordLogin: password
             })
-
         });
 
-        // Verificar respuesta del servidor
+        // ==================================
+        // 12. VERIFICAR FORMATO DE RESPUESTA
+        // ==================================
 
-        if (!respuesta.ok) {
+        const tipoContenido =
+            respuesta.headers.get("Content-Type") || "";
+
+        if (!tipoContenido.toLowerCase().includes(
+            "application/json"
+        )) {
 
             throw new Error(
-                "No se pudo conectar con el servidor."
+                "El servidor PHP devolvió una respuesta no válida."
             );
-
         }
+
+        // ==================================
+        // 13. LEER RESPUESTA DE PHP
+        // ==================================
 
         const datos = await respuesta.json();
 
-        // =========================================
-        // VALIDAR CREDENCIALES
-        // =========================================
+        // ==================================
+        // 14. PROCESAR ERRORES DEL SERVIDOR
+        // ==================================
 
-        if (datos.success === true) {
+        // IMPORTANTE:
+        // Las respuestas 400, 401 y 403 no
+        // significan que la conexión falló.
+        //
+        // Debemos mostrar el mensaje enviado
+        // por el servidor PHP.
+
+        if (!respuesta.ok || datos.success !== true) {
+
+            const mensajeError =
+                datos.mensaje ||
+                "No fue posible iniciar sesión.";
 
             mostrarMensaje(
-                datos.message || "Inicio de sesión exitoso.",
-                "success"
+                mensajeError,
+                "danger"
             );
 
-            // Redireccionar según el rol
+            return;
+        }
 
-            if (datos.rol === "administrador") {
+        // ==================================
+        // 15. INICIO DE SESIÓN EXITOSO
+        // ==================================
 
-                window.location.href = "./administrador.php";
+        mostrarMensaje(
+            datos.mensaje || "Inicio de sesión exitoso.",
+            "success"
+        );
 
-            } else if (datos.rol === "estudiante") {
+        // Redireccionar al panel correspondiente.
+        redireccionarUsuario(datos.rol);
 
-                window.location.href = "./estudiante.php";
+    } catch (error) {
 
-            } else if (datos.rol === "docente") {
+        // ==================================
+        // 16. ERRORES DE CONEXIÓN O RESPUESTA
+        // ==================================
 
-                mostrarMensaje(
-                    "El panel docente todavía no está disponible.",
-                    "warning"
-                );
+        console.error(
+            "Error durante el inicio de sesión:",
+            error
+        );
 
-            } else {
+        // Los problemas de comunicación se
+        // diferencian de las credenciales
+        // incorrectas y cuentas desactivadas.
 
-                mostrarMensaje(
-                    "El usuario no tiene un rol válido.",
-                    "danger"
-                );
+        if (error instanceof TypeError) {
 
-            }
+            mostrarMensaje(
+                "No fue posible conectar con el servidor PHP.",
+                "danger"
+            );
 
         } else {
 
             mostrarMensaje(
-                datos.message || "Credenciales incorrectas.",
+                error.message ||
+                "Ocurrió un error al procesar la respuesta.",
                 "danger"
             );
-
         }
-
-    } catch (error) {
-
-        console.error("Error en el login:", error);
-
-        mostrarMensaje(
-            "Error de conexión con el servidor PHP.",
-            "danger"
-        );
 
     } finally {
 
-        // Restaurar el botón
+        // ==================================
+        // 17. RESTAURAR BOTÓN
+        // ==================================
 
-        btnIniciarSesion.disabled = false;
-
-        btnIniciarSesion.innerHTML = `
-            <i class="bi bi-box-arrow-in-right"></i>
-            Iniciar sesión
-        `;
-
+        restaurarBotonLogin();
     }
-
 });
-
-// =========================================
-// MOSTRAR MENSAJES DEL FORMULARIO
-// =========================================
-
-function mostrarMensaje(mensaje, tipo) {
-
-    mensajeLogin.textContent = mensaje;
-
-    mensajeLogin.className = "alert alert-" + tipo;
-
-}
