@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -14,143 +15,159 @@
     <link rel="stylesheet" href="./css/estilos.css">
 </head>
 
-<body>
+<body class="pagina-inicio">
 
-    <!-- Encabezado/Titulo principal -->
-    <header>
+    <!-- Barra de navegacion -->
+    <nav class="navbar navbar-expand-lg navbar-dark barra-navegacion">
         <div class="container">
-            <h1 id="titulo">Campus Virtual Universitario</h1>
-            <p>Tu espacio de aprendizaje academico</p>
+
+            <a class="navbar-brand" href="index.html">
+                Campus Virtual Universitario
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNavegacion"
+                aria-controls="menuNavegacion" aria-expanded="false" aria-label="Abrir menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menuNavegacion">
+
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#informacion">Informacion</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#servicios">Servicios</a>
+                    </li>
+
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-acceso" href="login.html">
+                            Iniciar sesion
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
         </div>
-    </header>
+    </nav>
 
     <main>
 
-        <section id="inicio">
+        <!-- Portada principal -->
+        <section id="inicio" class="portada">
 
             <div class="container">
 
-                <div class="row align-items-center g-5">
+                <div class="contenido-portada">
 
-                    <!-- Informacion del campus -->
-                    <div class="col-md-6">
+                    <span class="etiqueta-portada">
+                        Bienvenido a nuestra comunidad universitaria
+                    </span>
 
-                        <div class="informacion-campus">
+                    <h1>Tu futuro comienza con una educacion de calidad</h1>
 
-                            <span class="etiqueta">Plataforma academica</span>
+                    <p>
+                        Conoce nuestro Campus Virtual, un espacio diseñado
+                        para acompañar tu formacion academica y facilitar
+                        el acceso a tus recursos universitarios.
+                    </p>
 
-                            <h2>Bienvenido al Campus Virtual</h2>
+                    <a href="login.html" class="btn btn-portada">
+                        Acceder al Campus Virtual
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Informacion general -->
+        <section id="informacion" class="seccion-informacion">
+
+            <div class="container">
+
+                <div class="encabezado-seccion">
+
+                    <span class="etiqueta">Nuestra universidad</span>
+
+                    <h2>Un espacio para aprender y crecer</h2>
+
+                    <p>
+                        Nuestra comunidad universitaria promueve el aprendizaje,
+                        el desarrollo profesional y el aprovechamiento de
+                        herramientas tecnologicas para complementar la educacion.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Servicios del campus -->
+        <section id="servicios" class="seccion-servicios">
+
+            <div class="container">
+
+                <div class="encabezado-seccion">
+
+                    <span class="etiqueta">Campus Virtual</span>
+
+                    <h2>Todo lo que necesitas para tu vida academica</h2>
+
+                    <p>
+                        Consulta los principales recursos disponibles
+                        para acompañar tu proceso de aprendizaje.
+                    </p>
+
+                </div>
+
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+
+                        <div class="tarjeta-servicio">
+                            <h3>Cursos</h3>
 
                             <p>
-                                Accede a tus cursos, consulta materiales,
-                                entrega asignaciones y revisa tus calificaciones
-                                desde un solo lugar.
+                                Consulta los cursos matriculados y accede
+                                a la informacion correspondiente a cada asignatura.
                             </p>
-
-                            <p class="destacado">
-                                Todo lo que necesitas para tu vida academica.
-                            </p>
-
-                            <div class="caracteristicas">
-
-                                <div class="caracteristica">
-                                    <span>Consulta tus cursos</span>
-                                </div>
-
-                                <div class="caracteristica">
-                                    <span>Entrega tus asignaciones</span>
-                                </div>
-
-                                <div class="caracteristica">
-                                    <span>Revisa tu progreso academico</span>
-                                </div>
-
-                            </div>
-
                         </div>
 
                     </div>
 
-                    <!-- Formulario de inicio de sesion -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
 
-                        <div class="card tarjeta-login">
+                        <div class="tarjeta-servicio">
+                            <h3>Materiales academicos</h3>
 
-                            <div class="card-body">
+                            <p>
+                                Encuentra los recursos y documentos
+                                proporcionados para tus actividades academicas.
+                            </p>
+                        </div>
 
-                                <h3 class="card-title text-center">
-                                    Inicio de sesion
-                                </h3>
+                    </div>
 
-                                <p class="texto-login text-center">
-                                    Ingresa tus credenciales para continuar.
-                                </p>
+                    <div class="col-md-4">
 
-                                <form id="formLogin">
+                        <div class="tarjeta-servicio">
+                            <h3>Seguimiento academico</h3>
 
-                                    <div class="mb-3">
-
-                                        <label for="correoLogin" class="form-label">
-                                            Correo electronico
-                                        </label>
-
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="bi bi-envelope"></i>
-                                            </span>
-
-                                            <input type="email" class="form-control" id="correoLogin" name="correoLogin"
-                                                placeholder="correo@universidad.com" autocomplete="username" required>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="mb-3">
-
-                                        <label for="passwordLogin" class="form-label">
-                                            Contrasena
-                                        </label>
-
-                                        <div class="input-group">
-
-                                            <span class="input-group-text">
-                                                <i class="bi bi-lock"></i>
-                                            </span>
-
-                                            <input type="password" class="form-control" id="passwordLogin"
-                                                name="passwordLogin" placeholder="Ingresa tu contrasena"
-                                                autocomplete="current-password" required>
-
-                                            <button type="button" class="btn btn-outline-secondary"
-                                                id="btnMostrarPassword" aria-label="Mostrar contrasena">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                                    <!-- Mensajes del formulario -->
-                                    <div id="mensajeLogin" class="alert d-none" role="alert" aria-live="polite">
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary w-100" id="btnIniciarSesion">
-
-                                        <i class="bi bi-box-arrow-in-right"></i>
-                                        Iniciar sesion
-
-                                    </button>
-
-                                </form>
-
-                                <div class="separador-login"></div>
-
-                                <p class="texto-seguridad text-center">
-                                    Acceso para estudiantes, docentes y administradores.
-                                </p>
-
-                            </div>
-
+                            <p>
+                                Consulta tus asignaciones, calificaciones
+                                y el progreso de tus actividades.
+                            </p>
                         </div>
 
                     </div>
@@ -161,19 +178,60 @@
 
         </section>
 
+        <!-- Acceso al sistema -->
+        <section class="seccion-acceso">
+
+            <div class="container text-center">
+
+                <h2>Ingresa a tu Campus Virtual</h2>
+
+                <p>
+                    Accede a tu cuenta para consultar tus cursos
+                    y continuar con tus actividades academicas.
+                </p>
+
+                <a href="login.html" class="btn btn-portada">
+                    Iniciar sesion
+                </a>
+
+            </div>
+
+        </section>
+
     </main>
 
     <!-- Footer -->
-    <footer>
-        <p>Campus Virtual Universitario - 2026</p>
-        <p>San Jose, Costa Rica</p>
+    <footer id="contacto">
+
+        <div class="container">
+
+            <div class="footer-contenido">
+
+                <div>
+                    <h3>Campus Virtual Universitario</h3>
+                    <p>Un espacio para tu desarrollo academico y profesional.</p>
+                </div>
+
+                <div>
+                    <h4>Contacto</h4>
+                    <p>San Jose, Costa Rica</p>
+                    <p>info@campusuniversitario.ac.cr</p>
+                    <p>+506 2200-0000</p>
+                </div>
+
+            </div>
+
+            <div class="footer-inferior">
+                <p>Campus Virtual Universitario - 2026</p>
+                <p>Todos los derechos reservados.</p>
+            </div>
+
+        </div>
+
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- JavaScript -->
-    <script src="./js/script.js"></script>
 
 </body>
 

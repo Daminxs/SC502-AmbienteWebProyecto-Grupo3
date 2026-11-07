@@ -15,13 +15,238 @@ body {
     background-color: #f3f6fa;
     color: #263445;
     min-height: 100vh;
+}
+
+/* Barra de navegacion */
+
+.barra-navegacion {
+    background-color: #17365d;
+    padding: 16px 0;
+}
+
+.navbar-brand {
+    color: white;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: #dce6f2;
+    font-size: 14px;
+    margin: 0 8px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white;
+}
+
+.btn-acceso {
+    background-color: white;
+    color: #17365d;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 9px 20px;
+    border-radius: 5px;
+}
+
+.btn-acceso:hover {
+    background-color: #e1ebf7;
+    color: #17365d;
+}
+
+/* Portada de la pagina principal */
+
+.portada {
+    background-color: #17365d;
+    padding: 105px 0;
+}
+
+.contenido-portada {
+    max-width: 760px;
+}
+
+.etiqueta-portada {
+    display: inline-block;
+    color: #dce6f2;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.portada h1 {
+    color: white;
+    font-size: 46px;
+    font-weight: bold;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.portada p {
+    color: #dce6f2;
+    font-size: 17px;
+    line-height: 1.7;
+    max-width: 650px;
+    margin-bottom: 30px;
+}
+
+.btn-portada {
+    background-color: white;
+    color: #17365d;
+    border: 1px solid white;
+    padding: 12px 22px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.btn-portada:hover {
+    background-color: #e1ebf7;
+    color: #17365d;
+    border-color: #e1ebf7;
+}
+
+/* Secciones de la pagina principal */
+
+.seccion-informacion,
+.seccion-servicios {
+    padding: 75px 0;
+}
+
+.seccion-informacion {
+    background-color: white;
+}
+
+.encabezado-seccion {
+    max-width: 760px;
+    margin-bottom: 35px;
+}
+
+.encabezado-seccion .etiqueta {
+    margin-bottom: 15px;
+}
+
+.encabezado-seccion h2 {
+    color: #17365d;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.encabezado-seccion p {
+    color: #596779;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* Etiquetas */
+
+.etiqueta {
+    display: inline-block;
+    background-color: #e1ebf7;
+    color: #17365d;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* Tarjetas de servicios */
+
+.tarjeta-servicio {
+    height: 100%;
+    background-color: white;
+    border: 1px solid #e1e7ef;
+    border-radius: 8px;
+    padding: 28px;
+    transition: border-color 0.2s ease;
+}
+
+.tarjeta-servicio:hover {
+    border-color: #1d568c;
+}
+
+.tarjeta-servicio h3 {
+    color: #17365d;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.tarjeta-servicio p {
+    color: #596779;
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Seccion de acceso */
+
+.seccion-acceso {
+    background-color: #e1ebf7;
+    padding: 65px 0;
+}
+
+.seccion-acceso h2 {
+    color: #17365d;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.seccion-acceso p {
+    color: #596779;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+/* Footer */
+
+footer {
+    background-color: #17365d;
+    padding: 35px 0 20px;
+}
+
+.footer-contenido {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    padding-bottom: 25px;
+}
+
+.footer-contenido h3,
+.footer-contenido h4 {
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.footer-contenido p {
+    color: #dce6f2;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.footer-inferior {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.footer-inferior p {
+    color: #dce6f2;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Encabezado de inicio de sesion */
+
+.pagina-login {
     display: flex;
     flex-direction: column;
 }
 
-/* Encabezado */
-
-header {
+.pagina-login header {
     background-color: #17365d;
     padding: 30px 15px;
     text-align: center;
@@ -35,22 +260,22 @@ header {
     margin-bottom: 8px;
 }
 
-header p {
+.pagina-login header p {
     color: #dce6f2;
     margin: 0;
     font-size: 16px;
 }
 
-/* Contenido principal */
+/* Contenido del inicio de sesion */
 
-main {
+.pagina-login main {
     flex: 1;
     display: flex;
     align-items: center;
     padding: 50px 15px;
 }
 
-#inicio {
+.pagina-login #inicio {
     width: 100%;
 }
 
@@ -60,31 +285,24 @@ main {
     padding: 25px;
 }
 
-.etiqueta {
-    display: inline-block;
-    background-color: #e1ebf7;
-    color: #17365d;
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: bold;
+.informacion-campus .etiqueta {
     margin-bottom: 20px;
 }
 
-#inicio h2 {
+.informacion-campus h2 {
     color: #17365d;
     font-size: 34px;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-#inicio p {
+.informacion-campus p {
     color: #596779;
     font-size: 17px;
     line-height: 1.7;
 }
 
-#inicio .destacado {
+.informacion-campus .destacado {
     color: #1d568c;
     font-weight: bold;
     margin-top: 15px;
@@ -93,21 +311,20 @@ main {
 /* Caracteristicas */
 
 .caracteristicas {
-    margin-top: 30px;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .caracteristica {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 18px;
+    padding-left: 12px;
+    border-left: 3px solid #17365d;
     color: #34465c;
     font-size: 15px;
-}
-
-.caracteristica i {
-    color: #1d568c;
-    font-size: 22px;
 }
 
 /* Tarjeta de inicio de sesion */
@@ -122,22 +339,6 @@ main {
 
 .tarjeta-login .card-body {
     padding: 35px;
-}
-
-.icono-login {
-    width: 65px;
-    height: 65px;
-    background-color: #e8f0fa;
-    color: #17365d;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 18px;
-}
-
-.icono-login i {
-    font-size: 32px;
 }
 
 .card-title {
@@ -236,39 +437,96 @@ label {
     margin-right: 5px;
 }
 
-/* Footer */
+.enlace-regreso {
+    color: #1d568c;
+    text-decoration: none;
+    font-size: 14px;
+}
 
-footer {
-    background-color: #17365d;
+.enlace-regreso:hover {
+    text-decoration: underline;
+}
+
+/* Footer de inicio de sesion */
+
+.pagina-login footer {
     text-align: center;
     padding: 22px 15px;
     margin-top: auto;
 }
 
-footer p {
+.pagina-login footer p {
     color: white;
     margin: 5px;
     font-size: 14px;
 }
 
-.caracteristicas {
-    margin-top: 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+/* Adaptacion para tabletas */
+
+@media (max-width: 991px) {
+
+    .navbar-nav {
+        align-items: flex-start !important;
+        padding-top: 15px;
+    }
+
+    .navbar-nav .nav-link {
+        margin: 5px 0;
+    }
+
+    .btn-acceso {
+        margin-top: 10px;
+    }
+
+    .portada {
+        padding: 85px 0;
+    }
+
+    .portada h1 {
+        font-size: 38px;
+    }
+
 }
 
-.caracteristica {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-left: 12px;
-    border-left: 3px solid #17365d;
-    color: #34465c;
-    font-size: 15px;
-}
+/* Adaptacion para celulares */
 
-.caracteristica i {
-    color: #1d568c;
-    font-size: 18px;
+@media (max-width: 767px) {
+
+    .portada {
+        padding: 70px 0;
+    }
+
+    .portada h1 {
+        font-size: 32px;
+    }
+
+    .seccion-informacion,
+    .seccion-servicios {
+        padding: 55px 0;
+    }
+
+    .encabezado-seccion h2 {
+        font-size: 27px;
+    }
+
+    .footer-contenido {
+        flex-direction: column;
+    }
+
+    .footer-inferior {
+        flex-direction: column;
+    }
+
+    .informacion-campus {
+        padding: 10px;
+    }
+
+    .informacion-campus h2 {
+        font-size: 28px;
+    }
+
+    .tarjeta-login .card-body {
+        padding: 25px;
+    }
+
 }
