@@ -1,3 +1,17 @@
+<?php
+
+/* =========================================
+   CAMPUS VIRTUAL - PANEL DEL ESTUDIANTE
+   ========================================= */
+
+// Definir el rol autorizado
+$rolRequerido = "estudiante";
+
+// Validar la sesión y los permisos
+require_once __DIR__ . "/../api/proteger.php";
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -18,7 +32,10 @@
         Saltar al contenido
     </a>
 
-    <!-- Menú lateral -->
+    <!-- =========================================
+         MENÚ LATERAL
+         ========================================= -->
+
     <aside class="menu-lateral" id="menuLateral">
 
         <a class="marca" href="#resumen">
@@ -53,6 +70,7 @@
                 <span aria-hidden="true">04</span>
                 Avisos recientes
             </a>
+
             <a class="enlace-menu" href="calificaciones.html">
                 <span aria-hidden="true">05</span>
                 Calificaciones
@@ -60,22 +78,34 @@
 
         </nav>
 
+        <!-- =====================================
+             OPCIONES INFERIORES
+             ===================================== -->
+
         <div class="menu-inferior">
-            <p class="indicador-demo">Vista de demostración</p>
+
+            <p class="indicador-demo">
+                Vista de demostración
+            </p>
 
             <p>
                 Organiza tu presente.<br>
                 Construye tu futuro.
             </p>
 
-            <!-- Ambos HTML están dentro de la carpeta HTML -->
-            <a class="enlace-volver" href="index.html">
-                Volver al acceso
+            <!-- Cierre de sesión mediante PHP -->
+            <a class="enlace-volver" href="../api/logout.php">
+                <span>Cerrar sesión</span>
                 <span aria-hidden="true">↗</span>
             </a>
+
         </div>
 
     </aside>
+
+    <!-- =========================================
+         ÁREA PRINCIPAL
+         ========================================= -->
 
     <div class="area-principal">
 
@@ -84,7 +114,12 @@
 
             <div class="barra-izquierda">
 
-                <button class="boton-menu" id="btnMenu" type="button" aria-label="Abrir menú" aria-expanded="false"
+                <button
+                    class="boton-menu"
+                    id="btnMenu"
+                    type="button"
+                    aria-label="Abrir menú"
+                    aria-expanded="false"
                     aria-controls="menuLateral">
                     ☰
                 </button>
@@ -96,25 +131,39 @@
             </div>
 
             <div class="usuario">
-                <span class="avatar" aria-hidden="true">AM</span>
+
+                <span class="avatar" aria-hidden="true">
+                    AM
+                </span>
 
                 <div>
                     <strong>Alex Mora</strong>
                     <small>Estudiante · Cuenta de ejemplo</small>
                 </div>
+
             </div>
 
         </header>
 
+        <!-- =====================================
+             CONTENIDO PRINCIPAL
+             ===================================== -->
+
         <main id="contenido" tabindex="-1">
 
-            <!-- Bienvenida y resumen -->
+            <!-- =================================
+                 BIENVENIDA Y RESUMEN
+                 ================================= -->
+
             <section id="resumen" class="seccion">
 
                 <div class="encabezado-pagina">
 
                     <div>
-                        <p class="sobrelinea">PANEL DEL ESTUDIANTE</p>
+
+                        <p class="sobrelinea">
+                            PANEL DEL ESTUDIANTE
+                        </p>
 
                         <h1>Bienvenido, Alex.</h1>
 
@@ -122,26 +171,33 @@
                             Tus cursos, actividades y próximos pasos
                             en un solo lugar.
                         </p>
+
                     </div>
 
                     <p class="fecha-actual" id="fechaActual"></p>
 
                 </div>
 
+                <!-- Banner de bienvenida -->
+
                 <div class="banner-bienvenida">
 
                     <div>
+
                         <span class="etiqueta-clara">
                             Continúa aprendiendo
                         </span>
 
-                        <h2>Tu próximo paso empieza aquí.</h2>
+                        <h2>
+                            Tu próximo paso empieza aquí.
+                        </h2>
 
                         <p>
                             Consulta tus cursos y organiza tus entregas.
                             Esta demostración utiliza datos de ejemplo
                             y todavía no está conectada al servidor.
                         </p>
+
                     </div>
 
                     <a class="boton boton-claro" href="#actividades">
@@ -151,9 +207,16 @@
 
                 </div>
 
+                <!-- =================================
+                     INDICADORES ACADÉMICOS
+                     ================================= -->
+
                 <div class="indicadores">
 
+                    <!-- Cursos activos -->
+
                     <article class="tarjeta-indicador">
+
                         <span class="indicador-nombre">
                             Cursos activos
                         </span>
@@ -163,9 +226,13 @@
                         <span class="texto-secundario">
                             Asignaturas de este periodo
                         </span>
+
                     </article>
 
+                    <!-- Actividades pendientes -->
+
                     <article class="tarjeta-indicador">
+
                         <span class="indicador-nombre">
                             Actividades pendientes
                         </span>
@@ -175,9 +242,13 @@
                         <span class="texto-secundario">
                             Entregas por realizar
                         </span>
+
                     </article>
 
+                    <!-- Actividades entregadas -->
+
                     <article class="tarjeta-indicador">
+
                         <span class="indicador-nombre">
                             Actividades entregadas
                         </span>
@@ -187,56 +258,90 @@
                         <span class="texto-secundario">
                             En los datos de ejemplo
                         </span>
+
                     </article>
 
                 </div>
 
             </section>
 
-            <!-- Cursos -->
+            <!-- =================================
+                 MIS CURSOS
+                 ================================= -->
+
             <section id="cursos" class="seccion">
 
                 <div class="encabezado-seccion">
 
                     <div>
-                        <p class="sobrelinea">CONTINÚA APRENDIENDO</p>
+
+                        <p class="sobrelinea">
+                            CONTINÚA APRENDIENDO
+                        </p>
+
                         <h2>Mis cursos</h2>
+
                     </div>
 
                     <div class="busqueda">
-                        <label for="buscarCurso">Buscar curso</label>
 
-                        <input id="buscarCurso" type="search" placeholder="Nombre o código">
+                        <label for="buscarCurso">
+                            Buscar curso
+                        </label>
+
+                        <input
+                            id="buscarCurso"
+                            type="search"
+                            placeholder="Nombre o código">
+
                     </div>
 
                 </div>
 
+                <!-- Cursos generados con JavaScript -->
+
                 <div class="rejilla-cursos" id="listaCursos"></div>
 
-                <p class="mensaje-vacio" id="mensajeCursos" role="status" hidden>
+                <p
+                    class="mensaje-vacio"
+                    id="mensajeCursos"
+                    role="status"
+                    hidden>
                     No se encontraron cursos con esa búsqueda.
                 </p>
 
             </section>
 
-            <!-- Actividades -->
+            <!-- =================================
+                 PRÓXIMAS ACTIVIDADES
+                 ================================= -->
+
             <section id="actividades" class="seccion">
 
                 <div class="encabezado-seccion">
 
                     <div>
-                        <p class="sobrelinea">ORGANIZA TU SEMANA</p>
+
+                        <p class="sobrelinea">
+                            ORGANIZA TU SEMANA
+                        </p>
+
                         <h2>Próximas actividades</h2>
+
                     </div>
 
                     <div class="filtro">
-                        <label for="filtroEstado">Mostrar actividades</label>
+
+                        <label for="filtroEstado">
+                            Mostrar actividades
+                        </label>
 
                         <select id="filtroEstado">
                             <option value="pendiente">Pendientes</option>
                             <option value="entregada">Entregadas</option>
                             <option value="todas">Todas</option>
                         </select>
+
                     </div>
 
                 </div>
@@ -245,14 +350,18 @@
                     Las actividades se ordenan por fecha de vencimiento.
                 </p>
 
+                <!-- Tabla de actividades -->
+
                 <div class="tabla-contenedor">
 
                     <table>
+
                         <caption class="solo-lectores">
                             Actividades académicas ordenadas por fecha límite
                         </caption>
 
                         <thead>
+
                             <tr>
                                 <th scope="col">Actividad</th>
                                 <th scope="col">Curso</th>
@@ -260,37 +369,62 @@
                                 <th scope="col">Estado</th>
                                 <th scope="col">Detalle</th>
                             </tr>
+
                         </thead>
 
                         <tbody id="listaActividades"></tbody>
+
                     </table>
 
                 </div>
 
-                <p class="mensaje-vacio" id="mensajeActividades" role="status" hidden>
+                <p
+                    class="mensaje-vacio"
+                    id="mensajeActividades"
+                    role="status"
+                    hidden>
                     No hay actividades para este filtro.
                 </p>
 
             </section>
 
-            <!-- Avisos -->
+            <!-- =================================
+                 AVISOS RECIENTES
+                 ================================= -->
+
             <section id="avisos" class="seccion">
 
                 <div class="encabezado-seccion">
+
                     <div>
-                        <p class="sobrelinea">AL DÍA CON TU CAMPUS</p>
+
+                        <p class="sobrelinea">
+                            AL DÍA CON TU CAMPUS
+                        </p>
+
                         <h2>Avisos recientes</h2>
+
                     </div>
 
-                    <span class="etiqueta">Información de ejemplo</span>
+                    <span class="etiqueta">
+                        Información de ejemplo
+                    </span>
+
                 </div>
 
                 <div class="rejilla-avisos">
 
-                    <article class="tarjeta-aviso">
-                        <span class="aviso-categoria">Ambiente Web</span>
+                    <!-- Primer aviso -->
 
-                        <h3>Organización del proyecto</h3>
+                    <article class="tarjeta-aviso">
+
+                        <span class="aviso-categoria">
+                            Ambiente Web
+                        </span>
+
+                        <h3>
+                            Organización del proyecto
+                        </h3>
 
                         <p>
                             Recuerda separar los archivos HTML, CSS y
@@ -301,12 +435,20 @@
                         <span class="aviso-autor">
                             Laura Solís · Docente
                         </span>
+
                     </article>
 
-                    <article class="tarjeta-aviso">
-                        <span class="aviso-categoria">Campus Virtual</span>
+                    <!-- Segundo aviso -->
 
-                        <h3>Prepara tus próximas entregas</h3>
+                    <article class="tarjeta-aviso">
+
+                        <span class="aviso-categoria">
+                            Campus Virtual
+                        </span>
+
+                        <h3>
+                            Prepara tus próximas entregas
+                        </h3>
 
                         <p>
                             Consulta las instrucciones de cada actividad
@@ -316,6 +458,7 @@
                         <span class="aviso-autor">
                             Coordinación académica
                         </span>
+
                     </article>
 
                 </div>
@@ -324,22 +467,46 @@
 
         </main>
 
+        <!-- =====================================
+             PIE DE PÁGINA
+             ===================================== -->
+
         <footer class="pie-pagina">
-            <span>Campus Virtual Universitario</span>
-            <span>Proyecto académico · Grupo 3</span>
+
+            <span>
+                Campus Virtual Universitario
+            </span>
+
+            <span>
+                Proyecto académico · Grupo 3
+            </span>
+
         </footer>
 
     </div>
 
-    <!-- Ventana utilizada por estudiante.js -->
-    <dialog class="ventana-detalle" id="ventanaDetalle" aria-labelledby="tituloDetalle">
+    <!-- =========================================
+         VENTANA DE DETALLES
+         Utilizada por estudiante.js
+         ========================================= -->
+
+    <dialog
+        class="ventana-detalle"
+        id="ventanaDetalle"
+        aria-labelledby="tituloDetalle">
 
         <div class="encabezado-modal">
+
             <h2 id="tituloDetalle"></h2>
 
-            <button class="boton-cerrar" id="btnCerrarDetalle" type="button" aria-label="Cerrar detalle">
+            <button
+                class="boton-cerrar"
+                id="btnCerrarDetalle"
+                type="button"
+                aria-label="Cerrar detalle">
                 ✕
             </button>
+
         </div>
 
         <div id="contenidoDetalle"></div>

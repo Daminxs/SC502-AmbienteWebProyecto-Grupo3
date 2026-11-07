@@ -1,0 +1,418 @@
+/* =====================================================
+   CAMPUS VIRTUAL | PANEL DE ADMINISTRACIÓN
+   Diseño compartido con el panel del estudiante
+   ===================================================== */
+
+@import url("./panel.css");
+
+/* =====================================================
+   ESTRUCTURA GENERAL
+   ===================================================== */
+
+.barra-superior {
+    text-align: left;
+}
+
+.area-principal .encabezado-pagina {
+    margin-bottom: 30px;
+}
+
+.area-principal .seccion {
+    padding: 0;
+    margin-bottom: 42px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    scroll-margin-top: 24px;
+}
+
+.area-principal .seccion > h2 {
+    margin-bottom: 24px;
+    color: var(--color-texto);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.area-principal .seccion > h5 {
+    margin: 26px 0 16px;
+    color: var(--color-texto);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* =====================================================
+   MENÚ LATERAL
+   ===================================================== */
+
+.menu-lateral .enlace-menu.active,
+.menu-lateral .enlace-menu[aria-current="page"] {
+    border: 0;
+    background-color: #2a4d77;
+    color: #ffffff;
+}
+
+.menu-lateral .enlace-menu:hover {
+    color: #ffffff;
+}
+
+.menu-lateral .indicador-demo {
+    margin-bottom: 15px;
+}
+
+/* =====================================================
+   TARJETAS DEL RESUMEN
+   ===================================================== */
+
+#resumen .card,
+#tarjetasRoles .card {
+    height: 100%;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-superficie);
+    box-shadow: none;
+}
+
+#resumen .card.text-center {
+    text-align: left !important;
+}
+
+#resumen .card-body,
+#tarjetasRoles .card-body {
+    padding: 24px;
+}
+
+#resumen .numero {
+    margin: 0 0 10px;
+    color: var(--color-principal);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+#resumen .card-text,
+#tarjetasRoles .card-text {
+    color: var(--color-secundario);
+    font-size: 13px;
+}
+
+/* =====================================================
+   USUARIOS RECIENTES
+   ===================================================== */
+
+#listaRecientes {
+    overflow: hidden;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-superficie);
+}
+
+#listaRecientes .list-group-item {
+    gap: 12px;
+    padding: 17px 20px;
+    border-right: 0;
+    border-left: 0;
+    border-color: var(--color-borde);
+    background-color: var(--color-superficie);
+    color: var(--color-texto);
+    font-size: 13px;
+}
+
+#listaRecientes .list-group-item:first-child {
+    border-top: 0;
+}
+
+#listaRecientes .list-group-item:last-child {
+    border-bottom: 0;
+}
+
+#listaRecientes .list-group-item span:first-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+#listaRecientes .badge.bg-danger,
+#tablaUsuarios .badge.bg-danger {
+    background-color: #e9eef5 !important;
+    color: #41546d;
+}
+
+/* =====================================================
+   ROLES
+   ===================================================== */
+
+#tarjetasRoles .card-title {
+    margin-bottom: 10px;
+    color: var(--color-principal);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+#tarjetasRoles .rol-cantidad {
+    margin-bottom: 16px;
+    color: var(--color-principal);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#tarjetasRoles .card ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--color-secundario);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+#tarjetasRoles .card li + li {
+    margin-top: 7px;
+}
+
+/* =====================================================
+   BUSCADORES Y FILTROS
+   ===================================================== */
+
+#usuarios > .row.g-2,
+#cursos > .row.g-2 {
+    display: grid;
+    gap: 12px;
+    align-items: stretch;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+#usuarios > .row.g-2 {
+    grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(170px, 1fr)
+        auto;
+}
+
+#cursos > .row.g-2 {
+    grid-template-columns: minmax(220px, 1fr) auto;
+}
+
+#usuarios > .row.g-2 > [class*="col-"],
+#cursos > .row.g-2 > [class*="col-"] {
+    width: auto;
+    max-width: none;
+    padding: 0;
+}
+
+#usuarios .form-control,
+#usuarios .form-select,
+#cursos .form-control {
+    width: 100%;
+    min-height: 43px;
+}
+
+.form-control,
+.form-select {
+    padding: 10px 13px;
+    border: 1px solid #bac8d8;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--color-texto);
+    font-size: 13px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-principal);
+    outline: none;
+    box-shadow: 0 0 0 3px #d7e8fa;
+}
+
+.form-label {
+    margin-bottom: 7px;
+    color: var(--color-texto);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =====================================================
+   TABLAS
+   ===================================================== */
+
+.area-principal .table-responsive {
+    overflow-x: auto;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-superficie);
+}
+
+.area-principal .table {
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 13px;
+}
+
+.area-principal .table thead th {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-borde);
+    background-color: #edf2f8;
+    color: #526277;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.area-principal .table tbody td {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-borde);
+    background-color: #ffffff;
+    color: var(--color-texto);
+    vertical-align: middle;
+}
+
+.area-principal .table tbody tr:hover td {
+    background-color: #f6f9fd;
+}
+
+.area-principal .table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.area-principal .table td:first-child {
+    min-width: 160px;
+    font-weight: 700;
+}
+
+#tablaRoles .form-select {
+    min-width: 160px;
+    width: auto;
+}
+
+/* =====================================================
+   BOTONES Y ESTADOS
+   ===================================================== */
+
+.btn {
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.btn.btn-primary {
+    border-color: var(--color-principal);
+    background-color: var(--color-principal);
+    color: #ffffff;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:active {
+    border-color: var(--color-principal-hover);
+    background-color: var(--color-principal-hover);
+    color: #ffffff;
+}
+
+.btn.btn-outline-secondary {
+    border-color: var(--color-borde);
+    color: var(--color-principal);
+}
+
+.btn.btn-outline-secondary:hover {
+    border-color: var(--color-borde);
+    background-color: #edf2f8;
+    color: var(--color-principal);
+}
+
+.btn-sm {
+    margin: 2px;
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+#btnNuevoUsuario,
+#btnNuevoCurso {
+    min-height: 43px;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.badge {
+    padding: 6px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =====================================================
+   VENTANAS MODALES
+   ===================================================== */
+
+.modal-content {
+    overflow: hidden;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    color: var(--color-texto);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--color-borde);
+}
+
+.modal-header .modal-title {
+    margin: 0;
+    color: var(--color-principal);
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    gap: 8px;
+}
+
+/* =====================================================
+   DISEÑO RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 1150px) {
+
+    #usuarios > .row.g-2 {
+        grid-template-columns:
+            minmax(180px, 1fr)
+            minmax(160px, 1fr);
+    }
+
+    #usuarios > .row.g-2 > :last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 680px) {
+
+    #usuarios > .row.g-2,
+    #cursos > .row.g-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    #usuarios > .row.g-2 > :last-child {
+        grid-column: auto;
+    }
+
+    #resumen .card-body,
+    #tarjetasRoles .card-body {
+        padding: 18px;
+    }
+
+    #resumen .numero {
+        font-size: 30px;
+    }
+
+    #listaRecientes .list-group-item {
+        flex-wrap: wrap;
+        padding: 15px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+}
