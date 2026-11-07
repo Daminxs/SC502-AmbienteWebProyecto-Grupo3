@@ -767,3 +767,195 @@ td .boton-enlace {
         scroll-behavior: auto;
     }
 }
+
+/* =========================================
+   AULA DEL CURSO
+   ========================================= */
+
+.aula-volver {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--color-principal);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.aula-volver:hover {
+    text-decoration: underline;
+}
+
+.banner-bienvenida h1 {
+    max-width: 760px;
+    margin-top: 16px;
+}
+
+.aula-ficha {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+    padding: 22px;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-superficie);
+}
+
+.aula-ficha span,
+.aula-ficha strong {
+    display: block;
+}
+
+.aula-ficha span {
+    margin-bottom: 6px;
+    color: var(--color-secundario);
+    font-size: 12px;
+}
+
+.aula-ficha strong {
+    color: var(--color-principal);
+    font-size: 15px;
+}
+
+/* Pestañas */
+
+.aula-pestanas {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.aula-pestana {
+    flex-shrink: 0;
+    padding: 14px 18px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background-color: transparent;
+    color: var(--color-secundario);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.aula-pestana:hover {
+    background-color: #e9eff7;
+    color: var(--color-principal);
+}
+
+.aula-pestana.activa {
+    border-bottom-color: var(--color-principal);
+    color: var(--color-principal);
+}
+
+.aula-pestana:focus-visible {
+    outline-offset: -4px;
+}
+
+/* Unidades y materiales */
+
+.aula-unidad {
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-superficie);
+}
+
+.aula-unidad summary {
+    padding: 20px 24px;
+    color: var(--color-principal);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.aula-unidad summary:hover {
+    background-color: #edf2f8;
+}
+
+.aula-unidad summary:focus-visible {
+    outline: 3px solid #4387cb;
+    outline-offset: -4px;
+}
+
+.aula-unidad[open] summary {
+    border-bottom: 1px solid var(--color-borde);
+    background-color: #edf2f8;
+}
+
+.aula-material {
+    padding: 22px 24px;
+}
+
+.aula-material + .aula-material {
+    border-top: 1px solid var(--color-borde);
+}
+
+.aula-material h3 {
+    margin: 12px 0;
+    font-size: 17px;
+}
+
+.aula-material p {
+    margin-bottom: 0;
+    color: var(--color-secundario);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* Participantes */
+
+.aula-participantes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.aula-persona {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-superficie);
+}
+
+.aula-persona .avatar {
+    flex-shrink: 0;
+}
+
+.aula-persona h3 {
+    margin-bottom: 5px;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.aula-persona p {
+    margin-bottom: 0;
+    color: var(--color-secundario);
+    font-size: 12px;
+}
+
+@media (max-width: 1150px) {
+    .aula-participantes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .aula-ficha,
+    .aula-participantes {
+        grid-template-columns: 1fr;
+    }
+
+    .aula-pestana {
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    .aula-material,
+    .aula-unidad summary {
+        padding: 18px;
+    }
+}

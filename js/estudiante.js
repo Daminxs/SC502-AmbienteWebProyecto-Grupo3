@@ -1,5 +1,9 @@
 "use strict";
 
+/* =========================================
+   DATOS DE EJEMPLO
+   ========================================= */
+
 function crearFecha(dias) {
     const fecha = new Date();
 
@@ -90,6 +94,10 @@ const actividades = [
     }
 ];
 
+/* =========================================
+   ELEMENTOS DE LA PÁGINA
+   ========================================= */
+
 const listaCursos = document.getElementById("listaCursos");
 const buscarCurso = document.getElementById("buscarCurso");
 const mensajeCursos = document.getElementById("mensajeCursos");
@@ -106,6 +114,9 @@ const tituloDetalle = document.getElementById("tituloDetalle");
 const contenidoDetalle = document.getElementById("contenidoDetalle");
 const btnCerrarDetalle = document.getElementById("btnCerrarDetalle");
 
+/* =========================================
+   FUNCIONES GENERALES
+   ========================================= */
 
 function formatearFecha(fecha) {
     return fecha.toLocaleDateString("es-CR", {
@@ -135,6 +146,10 @@ function escaparTexto(texto) {
     return elemento.innerHTML;
 }
 
+/* =========================================
+   FECHA E INDICADORES
+   ========================================= */
+
 function mostrarFechaActual() {
     const fecha = new Date();
 
@@ -155,7 +170,8 @@ function mostrarIndicadores() {
         return actividad.estado === "entregada";
     });
 
-    document.getElementById("totalCursos").textContent = cursos.length;
+    document.getElementById("totalCursos").textContent =
+        cursos.length;
 
     document.getElementById("totalPendientes").textContent =
         pendientes.length;
@@ -164,6 +180,9 @@ function mostrarIndicadores() {
         entregadas.length;
 }
 
+/* =========================================
+   CURSOS
+   ========================================= */
 
 function calcularProgreso(idCurso) {
     const actividadesCurso = actividades.filter(function (actividad) {
@@ -194,7 +213,7 @@ function mostrarCursos() {
         return texto.includes(busqueda);
     });
 
-    listaCursos.innerHTML = "";
+    listaCursos.replaceChildren();
 
     cursosFiltrados.forEach(function (curso) {
         const progreso = calcularProgreso(curso.id);
@@ -236,7 +255,7 @@ function mostrarCursos() {
                     class="boton-enlace"
                     type="button"
                     data-curso="${curso.id}">
-                    Ver información del curso →
+                    Entrar al curso →
                 </button>
             </div>
         `;
@@ -246,6 +265,23 @@ function mostrarCursos() {
 
     mensajeCursos.hidden = cursosFiltrados.length > 0;
 }
+
+// Abre el aula del curso seleccionado.
+// estudiante.html y curso.html deben estar en la carpeta HTML.
+function mostrarDetalleCurso(idCurso) {
+    const curso = obtenerCurso(idCurso);
+
+    if (!curso) {
+        return;
+    }
+
+    window.location.href =
+        "curso.html?id=" + encodeURIComponent(curso.id);
+}
+
+/* =========================================
+   ACTIVIDADES
+   ========================================= */
 
 function obtenerEstadoVisual(actividad) {
     if (actividad.estado === "entregada") {
@@ -296,7 +332,7 @@ function mostrarActividades() {
         return a.fechaLimite - b.fechaLimite;
     });
 
-    listaActividades.innerHTML = "";
+    listaActividades.replaceChildren();
 
     actividadesFiltradas.forEach(function (actividad) {
         const curso = obtenerCurso(actividad.idCurso);
@@ -333,6 +369,9 @@ function mostrarActividades() {
     mensajeActividades.hidden = actividadesFiltradas.length > 0;
 }
 
+/* =========================================
+   DETALLES DE UNA ACTIVIDAD
+   ========================================= */
 
 function agregarParrafo(texto, clase = "") {
     const parrafo = document.createElement("p");
@@ -341,31 +380,6 @@ function agregarParrafo(texto, clase = "") {
     parrafo.className = clase;
 
     contenidoDetalle.appendChild(parrafo);
-}
-
-function mostrarDetalleCurso(idCurso) {
-    const curso = obtenerCurso(idCurso);
-
-    if (!curso) {
-        return;
-    }
-
-    tituloDetalle.textContent = curso.nombre;
-    contenidoDetalle.replaceChildren();
-
-    agregarParrafo(curso.codigo + " · Docente: " + curso.docente);
-    agregarParrafo(curso.descripcion);
-
-    agregarParrafo(
-        "Actividades entregadas: " + calcularProgreso(curso.id) + "%."
-    );
-
-    agregarParrafo(
-        "Información de ejemplo. El aula completa se añadirá en el módulo de cursos.",
-        "texto-secundario"
-    );
-
-    ventanaDetalle.showModal();
 }
 
 function mostrarDetalleActividad(idActividad) {
@@ -402,6 +416,10 @@ function mostrarDetalleActividad(idActividad) {
     ventanaDetalle.showModal();
 }
 
+/* =========================================
+   MENÚ MÓVIL
+   ========================================= */
+
 function cerrarMenu() {
     menuLateral.classList.remove("abierto");
 
@@ -435,6 +453,10 @@ document.addEventListener("click", function (evento) {
     }
 });
 
+/* =========================================
+   NAVEGACIÓN ENTRE SECCIONES
+   ========================================= */
+
 function actualizarNavegacion() {
     const destino = window.location.hash || "#resumen";
 
@@ -457,7 +479,12 @@ document.querySelectorAll(".enlace-menu").forEach(function (enlace) {
 
 window.addEventListener("hashchange", actualizarNavegacion);
 
+/* =========================================
+   BÚSQUEDA, FILTROS Y BOTONES
+   ========================================= */
+
 buscarCurso.addEventListener("input", mostrarCursos);
+
 filtroEstado.addEventListener("change", mostrarActividades);
 
 listaCursos.addEventListener("click", function (evento) {
@@ -479,6 +506,10 @@ listaActividades.addEventListener("click", function (evento) {
 btnCerrarDetalle.addEventListener("click", function () {
     ventanaDetalle.close();
 });
+
+/* =========================================
+   INICIALIZACIÓN
+   ========================================= */
 
 mostrarFechaActual();
 mostrarIndicadores();
