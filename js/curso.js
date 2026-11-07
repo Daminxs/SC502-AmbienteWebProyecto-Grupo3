@@ -199,6 +199,13 @@ const cursoSeleccionado = cursos.find(function (curso) {
     return curso.id === idCurso;
 });
 
+// Conserva los estados originales para poder recalcularlos.
+const estadosIniciales = cursoSeleccionado
+    ? cursoSeleccionado.actividades.map(function (actividad) {
+        return actividad.estado;
+    })
+    : [];
+
 /* =========================================
    ELEMENTOS DE LA PÁGINA
    ========================================= */
@@ -209,10 +216,6 @@ const btnMenu = document.getElementById("btnMenu");
 const filtroActividad = document.getElementById("filtroActividad");
 const actividadesCurso = document.getElementById("actividadesCurso");
 
-const ventanaDetalle = document.getElementById("ventanaDetalle");
-const tituloDetalle = document.getElementById("tituloDetalle");
-const contenidoDetalle = document.getElementById("contenidoDetalle");
-
 const pestanas = document.querySelectorAll(".aula-pestana");
 
 /* =========================================
@@ -221,6 +224,7 @@ const pestanas = document.querySelectorAll(".aula-pestana");
 
 function escaparTexto(texto) {
     const elemento = document.createElement("span");
+
     elemento.textContent = texto;
 
     return elemento.innerHTML;
@@ -246,6 +250,24 @@ function obtenerIniciales(nombre) {
         })
         .join("")
         .toUpperCase();
+}
+
+/* =========================================
+   SINCRONIZACIÓN DE ENTREGAS
+   ========================================= */
+
+function sincronizarEntregas() {
+    if (!cursoSeleccionado) {
+        return;
+    }
+
+    cursoSeleccionado.actividades.forEach(
+        function (actividad, indice) {
+            actividad.estado = estadosIniciales[indice];
+        }
+    );
+
+    EntregasDemo.aplicar(cursoSeleccionado.actividades);
 }
 
 /* =========================================
@@ -327,35 +349,44 @@ function mostrarUnidades() {
 }
 
 /* =========================================
-   ACTIVIDADES
+   ESTADOS DE LAS ACTIVIDADES
    ========================================= */
 
 function obtenerEstadoVisual(actividad) {
+    const entrega = EntregasDemo.obtener(actividad.id);
+
     if (actividad.estado === "entregada") {
+        if (entrega && entrega.tardia) {
+            return {
+                texto: "Entrega tardía",
+                clase: "urgente"
+            };
+        }
+
         return {
             texto: "Entregada",
             clase: "entregada"
         };
     }
 
-    const horas =
+    const horasRestantes =
         (actividad.fechaLimite.getTime() - Date.now()) / 3600000;
 
-    if (horas < 0) {
+    if (horasRestantes < 0) {
         return {
             texto: "Vencida",
             clase: "vencida"
         };
     }
 
-    if (horas <= 24) {
+    if (horasRestantes <= 24) {
         return {
             texto: "Menos de 24 horas",
             clase: "urgente"
         };
     }
 
-    if (horas <= 48) {
+    if (horasRestantes <= 48) {
         return {
             texto: "Próxima a vencer",
             clase: "urgente"
@@ -368,17 +399,20 @@ function obtenerEstadoVisual(actividad) {
     };
 }
 
+/* =========================================
+   LISTADO DE ACTIVIDADES
+   ========================================= */
+
 function mostrarActividades() {
     const filtro = filtroActividad.value;
 
-    const actividades = cursoSeleccionado.actividades.filter(
-        function (actividad) {
+    const actividadesFiltradas =
+        cursoSeleccionado.actividades.filter(function (actividad) {
             return filtro === "todas" || actividad.estado === filtro;
-        }
-    );
+        });
 
     // Primero pendientes; dentro de cada grupo, por fecha límite.
-    actividades.sort(function (a, b) {
+    actividadesFiltradas.sort(function (a, b) {
         if (a.estado !== b.estado) {
             return a.estado === "pendiente" ? -1 : 1;
         }
@@ -388,7 +422,7 @@ function mostrarActividades() {
 
     actividadesCurso.replaceChildren();
 
-    actividades.forEach(function (actividad) {
+    actividadesFiltradas.forEach(function (actividad) {
         const estado = obtenerEstadoVisual(actividad);
         const fila = document.createElement("tr");
 
@@ -408,7 +442,7 @@ function mostrarActividades() {
                     type="button"
                     class="boton-enlace"
                     data-actividad="${actividad.id}">
-                    Ver instrucciones
+                    Ver actividad
                 </button>
             </td>
         `;
@@ -417,10 +451,14 @@ function mostrarActividades() {
     });
 
     document.getElementById("sinActividades").hidden =
-        actividades.length > 0;
+        actividadesFiltradas.length > 0;
 }
 
 function mostrarDetalleActividad(idActividad) {
+    if (!cursoSeleccionado) {
+        return;
+    }
+
     const actividad = cursoSeleccionado.actividades.find(
         function (item) {
             return item.id === idActividad;
@@ -431,29 +469,8 @@ function mostrarDetalleActividad(idActividad) {
         return;
     }
 
-    tituloDetalle.textContent = actividad.titulo;
-    contenidoDetalle.replaceChildren();
-
-    const textos = [
-        "Fecha límite: " +
-            formatearFecha(actividad.fechaLimite) +
-            " a las 23:59, hora local del navegador.",
-
-        "Estado: " + obtenerEstadoVisual(actividad).texto,
-
-        actividad.instrucciones,
-
-        "Vista de consulta con datos de ejemplo. El formulario de entrega se añadirá en el módulo de actividades."
-    ];
-
-    textos.forEach(function (texto) {
-        const parrafo = document.createElement("p");
-        parrafo.textContent = texto;
-
-        contenidoDetalle.appendChild(parrafo);
-    });
-
-    ventanaDetalle.showModal();
+    window.location.href =
+        "actividad.html?id=" + encodeURIComponent(actividad.id);
 }
 
 /* =========================================
@@ -504,7 +521,7 @@ function mostrarParticipantes() {
 }
 
 /* =========================================
-   PESTAÑAS
+   PESTAÑAS DEL CURSO
    ========================================= */
 
 function activarPestana(pestanaSeleccionada) {
@@ -526,7 +543,7 @@ pestanas.forEach(function (pestana, indice) {
         activarPestana(pestana);
     });
 
-    // Permite recorrer las pestañas mediante el teclado.
+    // Navegación accesible mediante teclado.
     pestana.addEventListener("keydown", function (evento) {
         let siguiente = indice;
 
@@ -551,7 +568,7 @@ pestanas.forEach(function (pestana, indice) {
 });
 
 /* =========================================
-   MENÚ MÓVIL Y EVENTOS
+   MENÚ MÓVIL
    ========================================= */
 
 function cerrarMenu() {
@@ -587,12 +604,13 @@ document.addEventListener("keydown", function (evento) {
     }
 });
 
-document.getElementById("btnCerrarDetalle").addEventListener(
-    "click",
-    function () {
-        ventanaDetalle.close();
-    }
-);
+document.querySelectorAll(".enlace-menu").forEach(function (enlace) {
+    enlace.addEventListener("click", cerrarMenu);
+});
+
+/* =========================================
+   FILTRO Y BOTONES DE ACTIVIDADES
+   ========================================= */
 
 filtroActividad.addEventListener("change", function () {
     if (cursoSeleccionado) {
@@ -609,16 +627,37 @@ actividadesCurso.addEventListener("click", function (evento) {
 });
 
 /* =========================================
+   ACTUALIZACIÓN DEL RESUMEN
+   ========================================= */
+
+function actualizarResumenCurso() {
+    if (!cursoSeleccionado) {
+        return;
+    }
+
+    sincronizarEntregas();
+    mostrarInformacionCurso();
+    mostrarActividades();
+}
+
+/* =========================================
    INICIALIZACIÓN
    ========================================= */
 
 if (cursoSeleccionado) {
-    mostrarInformacionCurso();
+    actualizarResumenCurso();
     mostrarUnidades();
-    mostrarActividades();
     mostrarParticipantes();
 
     document.getElementById("aulaCurso").hidden = false;
 } else {
     document.getElementById("errorCurso").hidden = false;
 }
+
+// Actualiza las entregas al regresar con el botón Atrás.
+// Conserva la pestaña seleccionada y las unidades abiertas.
+window.addEventListener("pageshow", function (evento) {
+    if (evento.persisted && cursoSeleccionado) {
+        actualizarResumenCurso();
+    }
+});

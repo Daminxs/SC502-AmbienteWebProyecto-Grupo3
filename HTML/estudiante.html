@@ -8,6 +8,7 @@
     <title>Panel del estudiante | Campus Virtual</title>
 
     <link rel="stylesheet" href="../css/panel.css">
+    <script src="../js/entregas-demo.js" defer></script>
     <script src="../js/estudiante.js" defer></script>
 </head>
 
@@ -33,10 +34,7 @@
 
         <nav class="navegacion" aria-label="Navegación del estudiante">
 
-            <a
-                class="enlace-menu activo"
-                href="#resumen"
-                aria-current="location">
+            <a class="enlace-menu activo" href="#resumen" aria-current="location">
                 <span aria-hidden="true">01</span>
                 Resumen
             </a>
@@ -82,12 +80,7 @@
 
             <div class="barra-izquierda">
 
-                <button
-                    class="boton-menu"
-                    id="btnMenu"
-                    type="button"
-                    aria-label="Abrir menú"
-                    aria-expanded="false"
+                <button class="boton-menu" id="btnMenu" type="button" aria-label="Abrir menú" aria-expanded="false"
                     aria-controls="menuLateral">
                     ☰
                 </button>
@@ -209,21 +202,14 @@
                     <div class="busqueda">
                         <label for="buscarCurso">Buscar curso</label>
 
-                        <input
-                            id="buscarCurso"
-                            type="search"
-                            placeholder="Nombre o código">
+                        <input id="buscarCurso" type="search" placeholder="Nombre o código">
                     </div>
 
                 </div>
 
                 <div class="rejilla-cursos" id="listaCursos"></div>
 
-                <p
-                    class="mensaje-vacio"
-                    id="mensajeCursos"
-                    role="status"
-                    hidden>
+                <p class="mensaje-vacio" id="mensajeCursos" role="status" hidden>
                     No se encontraron cursos con esa búsqueda.
                 </p>
 
@@ -277,11 +263,7 @@
 
                 </div>
 
-                <p
-                    class="mensaje-vacio"
-                    id="mensajeActividades"
-                    role="status"
-                    hidden>
+                <p class="mensaje-vacio" id="mensajeActividades" role="status" hidden>
                     No hay actividades para este filtro.
                 </p>
 
@@ -346,19 +328,12 @@
     </div>
 
     <!-- Ventana utilizada por estudiante.js -->
-    <dialog
-        class="ventana-detalle"
-        id="ventanaDetalle"
-        aria-labelledby="tituloDetalle">
+    <dialog class="ventana-detalle" id="ventanaDetalle" aria-labelledby="tituloDetalle">
 
         <div class="encabezado-modal">
             <h2 id="tituloDetalle"></h2>
 
-            <button
-                class="boton-cerrar"
-                id="btnCerrarDetalle"
-                type="button"
-                aria-label="Cerrar detalle">
+            <button class="boton-cerrar" id="btnCerrarDetalle" type="button" aria-label="Cerrar detalle">
                 ✕
             </button>
         </div>

@@ -1,7 +1,7 @@
 "use strict";
 
 /* =========================================
-   DATOS DE EJEMPLO
+   DATOS DE DEMOSTRACIÓN
    ========================================= */
 
 function crearFecha(dias) {
@@ -94,6 +94,11 @@ const actividades = [
     }
 ];
 
+// Conserva los estados originales para recalcular el resumen.
+const estadosIniciales = actividades.map(function (actividad) {
+    return actividad.estado;
+});
+
 /* =========================================
    ELEMENTOS DE LA PÁGINA
    ========================================= */
@@ -108,11 +113,6 @@ const mensajeActividades = document.getElementById("mensajeActividades");
 
 const menuLateral = document.getElementById("menuLateral");
 const btnMenu = document.getElementById("btnMenu");
-
-const ventanaDetalle = document.getElementById("ventanaDetalle");
-const tituloDetalle = document.getElementById("tituloDetalle");
-const contenidoDetalle = document.getElementById("contenidoDetalle");
-const btnCerrarDetalle = document.getElementById("btnCerrarDetalle");
 
 /* =========================================
    FUNCIONES GENERALES
@@ -141,9 +141,24 @@ function normalizarTexto(texto) {
 
 function escaparTexto(texto) {
     const elemento = document.createElement("span");
+
     elemento.textContent = texto;
 
     return elemento.innerHTML;
+}
+
+/* =========================================
+   SINCRONIZACIÓN DE ENTREGAS
+   ========================================= */
+
+function sincronizarEntregas() {
+    // Restablece los datos originales antes de aplicar
+    // las entregas registradas en esta sesión.
+    actividades.forEach(function (actividad, indice) {
+        actividad.estado = estadosIniciales[indice];
+    });
+
+    EntregasDemo.aplicar(actividades);
 }
 
 /* =========================================
@@ -181,7 +196,7 @@ function mostrarIndicadores() {
 }
 
 /* =========================================
-   CURSOS
+   CURSOS Y PROGRESO
    ========================================= */
 
 function calcularProgreso(idCurso) {
@@ -189,13 +204,13 @@ function calcularProgreso(idCurso) {
         return actividad.idCurso === idCurso;
     });
 
-    const entregadas = actividadesCurso.filter(function (actividad) {
-        return actividad.estado === "entregada";
-    });
-
     if (actividadesCurso.length === 0) {
         return 0;
     }
+
+    const entregadas = actividadesCurso.filter(function (actividad) {
+        return actividad.estado === "entregada";
+    });
 
     return Math.round(
         (entregadas.length / actividadesCurso.length) * 100
@@ -266,8 +281,6 @@ function mostrarCursos() {
     mensajeCursos.hidden = cursosFiltrados.length > 0;
 }
 
-// Abre el aula del curso seleccionado.
-// estudiante.html y curso.html deben estar en la carpeta HTML.
 function mostrarDetalleCurso(idCurso) {
     const curso = obtenerCurso(idCurso);
 
@@ -280,11 +293,20 @@ function mostrarDetalleCurso(idCurso) {
 }
 
 /* =========================================
-   ACTIVIDADES
+   ESTADOS DE LAS ACTIVIDADES
    ========================================= */
 
 function obtenerEstadoVisual(actividad) {
+    const entrega = EntregasDemo.obtener(actividad.id);
+
     if (actividad.estado === "entregada") {
+        if (entrega && entrega.tardia) {
+            return {
+                texto: "Entrega tardía",
+                clase: "urgente"
+            };
+        }
+
         return {
             texto: "Entregada",
             clase: "entregada"
@@ -321,6 +343,10 @@ function obtenerEstadoVisual(actividad) {
     };
 }
 
+/* =========================================
+   LISTADO DE ACTIVIDADES
+   ========================================= */
+
 function mostrarActividades() {
     const filtro = filtroEstado.value;
 
@@ -328,6 +354,7 @@ function mostrarActividades() {
         return filtro === "todas" || actividad.estado === filtro;
     });
 
+    // Ordena las actividades por fecha límite.
     actividadesFiltradas.sort(function (a, b) {
         return a.fechaLimite - b.fechaLimite;
     });
@@ -358,7 +385,7 @@ function mostrarActividades() {
                     class="boton-enlace"
                     type="button"
                     data-actividad="${actividad.id}">
-                    Consultar
+                    Ver actividad
                 </button>
             </td>
         `;
@@ -367,19 +394,6 @@ function mostrarActividades() {
     });
 
     mensajeActividades.hidden = actividadesFiltradas.length > 0;
-}
-
-/* =========================================
-   DETALLES DE UNA ACTIVIDAD
-   ========================================= */
-
-function agregarParrafo(texto, clase = "") {
-    const parrafo = document.createElement("p");
-
-    parrafo.textContent = texto;
-    parrafo.className = clase;
-
-    contenidoDetalle.appendChild(parrafo);
 }
 
 function mostrarDetalleActividad(idActividad) {
@@ -391,29 +405,8 @@ function mostrarDetalleActividad(idActividad) {
         return;
     }
 
-    const curso = obtenerCurso(actividad.idCurso);
-    const estado = obtenerEstadoVisual(actividad);
-
-    tituloDetalle.textContent = actividad.titulo;
-    contenidoDetalle.replaceChildren();
-
-    agregarParrafo(curso.nombre, "texto-secundario");
-
-    agregarParrafo(
-        "Fecha límite: " +
-        formatearFecha(actividad.fechaLimite) +
-        " a las 23:59, según la hora local del navegador."
-    );
-
-    agregarParrafo("Estado: " + estado.texto);
-    agregarParrafo(actividad.instrucciones);
-
-    agregarParrafo(
-        "Esta vista permite consultar instrucciones. El formulario de entrega se añadirá en el módulo de actividades.",
-        "texto-secundario"
-    );
-
-    ventanaDetalle.showModal();
+    window.location.href =
+        "actividad.html?id=" + encodeURIComponent(actividad.id);
 }
 
 /* =========================================
@@ -503,16 +496,29 @@ listaActividades.addEventListener("click", function (evento) {
     }
 });
 
-btnCerrarDetalle.addEventListener("click", function () {
-    ventanaDetalle.close();
-});
+/* =========================================
+   ACTUALIZACIÓN DEL PANEL
+   ========================================= */
+
+function actualizarPanel() {
+    sincronizarEntregas();
+    mostrarFechaActual();
+    mostrarIndicadores();
+    mostrarCursos();
+    mostrarActividades();
+    actualizarNavegacion();
+}
 
 /* =========================================
    INICIALIZACIÓN
    ========================================= */
 
-mostrarFechaActual();
-mostrarIndicadores();
-mostrarCursos();
-mostrarActividades();
-actualizarNavegacion();
+actualizarPanel();
+
+// Si el navegador recupera la página desde su caché
+// al pulsar Atrás, actualiza los datos de la sesión.
+window.addEventListener("pageshow", function (evento) {
+    if (evento.persisted) {
+        actualizarPanel();
+    }
+});

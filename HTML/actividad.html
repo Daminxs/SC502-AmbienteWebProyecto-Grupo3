@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Actividad | Campus Virtual</title>
+
+    <link rel="stylesheet" href="../css/panel.css">
+
+    <!-- El archivo compartido debe cargarse primero -->
+    <script src="../js/entregas-demo.js" defer></script>
+    <script src="../js/actividad.js" defer></script>
+</head>
+
+<body>
+
+    <a class="saltar-contenido" href="#contenido">
+        Saltar al contenido
+    </a>
+
+    <aside class="menu-lateral" id="menuLateral">
+
+        <a class="marca" href="estudiante.html">
+            <span class="marca-icono" aria-hidden="true">C</span>
+
+            <span>
+                Campus Virtual
+                <small>Espacio del estudiante</small>
+            </span>
+        </a>
+
+        <p class="menu-etiqueta">MI ESPACIO</p>
+
+        <nav class="navegacion" aria-label="Navegación del estudiante">
+
+            <a class="enlace-menu" href="estudiante.html#resumen">
+                <span aria-hidden="true">01</span>
+                Resumen
+            </a>
+
+            <a class="enlace-menu" href="estudiante.html#cursos">
+                <span aria-hidden="true">02</span>
+                Mis cursos
+            </a>
+
+            <a class="enlace-menu activo" href="estudiante.html#actividades">
+                <span aria-hidden="true">03</span>
+                Próximas actividades
+            </a>
+
+            <a class="enlace-menu" href="estudiante.html#avisos">
+                <span aria-hidden="true">04</span>
+                Avisos recientes
+            </a>
+
+        </nav>
+
+        <div class="menu-inferior">
+            <p class="indicador-demo">Vista de demostración</p>
+
+            <p>Organiza tu presente.<br>Construye tu futuro.</p>
+
+            <a class="enlace-volver" href="index.html">
+                Volver al acceso
+                <span aria-hidden="true">↗</span>
+            </a>
+        </div>
+
+    </aside>
+
+    <div class="area-principal">
+
+        <header class="barra-superior">
+
+            <div class="barra-izquierda">
+
+                <button
+                    class="boton-menu"
+                    id="btnMenu"
+                    type="button"
+                    aria-label="Abrir menú"
+                    aria-controls="menuLateral"
+                    aria-expanded="false">
+                    ☰
+                </button>
+
+                <span class="ubicacion">Mi espacio / Actividad</span>
+
+            </div>
+
+            <div class="usuario">
+                <span class="avatar" aria-hidden="true">AM</span>
+
+                <div>
+                    <strong>Alex Mora</strong>
+                    <small>Estudiante · Cuenta de ejemplo</small>
+                </div>
+            </div>
+
+        </header>
+
+        <main id="contenido" tabindex="-1">
+
+            <a
+                class="aula-volver"
+                id="volverCurso"
+                href="estudiante.html#actividades">
+                ← Volver a las actividades
+            </a>
+
+            <section id="errorActividad" class="mensaje-vacio" hidden>
+                <h1>Actividad no encontrada</h1>
+                <p>Selecciona una actividad desde tu panel o desde un curso.</p>
+            </section>
+
+            <div id="paginaActividad" hidden>
+
+                <section class="seccion">
+
+                    <div class="encabezado-pagina">
+                        <div>
+                            <p
+                                class="sobrelinea"
+                                id="nombreCursoActividad">
+                            </p>
+
+                            <h1 id="tituloActividad"></h1>
+
+                            <p class="texto-secundario">
+                                Consulta las instrucciones y prepara tu entrega.
+                            </p>
+                        </div>
+
+                        <span class="estado" id="estadoActividad"></span>
+                    </div>
+
+                    <div class="aula-ficha">
+
+                        <div>
+                            <span>Fecha límite</span>
+                            <strong id="fechaLimite"></strong>
+                        </div>
+
+                        <div>
+                            <span>Hora límite</span>
+                            <strong>23:59 · Hora local del navegador</strong>
+                        </div>
+
+                        <div>
+                            <span>Modalidad</span>
+                            <strong>Individual</strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <div class="entrega-distribucion">
+
+                    <!-- Instrucciones -->
+                    <section class="entrega-tarjeta">
+
+                        <p class="sobrelinea">ANTES DE COMENZAR</p>
+                        <h2>Instrucciones</h2>
+
+                        <p id="instruccionesActividad"></p>
+
+                        <h3>Revisa tu trabajo</h3>
+
+                        <ul class="entrega-recomendaciones">
+                            <li>Comprueba que los archivos sean los correctos.</li>
+                            <li>Utiliza nombres que identifiquen tu trabajo.</li>
+                            <li>Añade un comentario si necesitas aclarar algo.</li>
+                        </ul>
+
+                        <p class="texto-secundario">
+                            Esta versión guarda un registro de prueba durante
+                            la sesión de esta pestaña. El contenido de los
+                            archivos no se almacena ni se envía.
+                        </p>
+
+                    </section>
+
+                    <!-- Entrega -->
+                    <section class="entrega-tarjeta">
+
+                        <p class="sobrelinea">TU TRABAJO</p>
+                        <h2>Entrega de la actividad</h2>
+
+                        <p
+                            id="avisoPlazo"
+                            class="entrega-aviso"
+                            hidden>
+                            La fecha límite venció. La entrega simulada
+                            se registrará como tardía.
+                        </p>
+
+                        <!-- Resumen de una entrega existente -->
+                        <div
+                            id="resumenEntrega"
+                            aria-live="polite"
+                            hidden>
+                        </div>
+
+                        <button
+                            class="boton entrega-boton-secundario"
+                            id="btnEditarEntrega"
+                            type="button"
+                            hidden>
+                            Reemplazar entrega simulada
+                        </button>
+
+                        <!-- Formulario -->
+                        <form id="formEntrega">
+
+                            <label for="archivosEntrega">
+                                Archivos del trabajo
+                            </label>
+
+                            <input
+                                id="archivosEntrega"
+                                name="archivos"
+                                type="file"
+                                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.txt,.png,.jpg,.jpeg"
+                                aria-describedby="ayudaArchivos"
+                                multiple
+                                required>
+
+                            <p
+                                class="texto-secundario entrega-ayuda"
+                                id="ayudaArchivos">
+                                Hasta 5 archivos, 10 MB por archivo y 25 MB
+                                en total. Formatos: PDF, Word, PowerPoint,
+                                Excel, ZIP, TXT, PNG y JPG.
+                            </p>
+
+                            <ul
+                                class="entrega-archivos"
+                                id="listaArchivos"
+                                aria-live="polite">
+                            </ul>
+
+                            <label for="comentarioEntrega">
+                                Comentario para el docente
+                                <span class="texto-secundario">(opcional)</span>
+                            </label>
+
+                            <textarea
+                                id="comentarioEntrega"
+                                name="comentario"
+                                rows="5"
+                                maxlength="1000"
+                                placeholder="Agrega una aclaración sobre tu trabajo.">
+                            </textarea>
+
+                            <p class="entrega-ayuda texto-secundario">
+                                Máximo 1000 caracteres.
+                            </p>
+
+                            <p
+                                class="entrega-error"
+                                id="errorEntrega"
+                                role="alert"
+                                hidden>
+                            </p>
+
+                            <div class="entrega-acciones">
+
+                                <button
+                                    class="boton entrega-boton-principal"
+                                    id="btnRevisarEntrega"
+                                    type="submit">
+                                    Revisar entrega
+                                </button>
+
+                                <button
+                                    class="boton entrega-boton-secundario"
+                                    id="btnCancelarEdicion"
+                                    type="button"
+                                    hidden>
+                                    Cancelar
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </section>
+
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer class="pie-pagina">
+            <span>Campus Virtual Universitario</span>
+            <span>Proyecto académico · Grupo 3</span>
+        </footer>
+
+    </div>
+
+    <!-- Confirmación antes de registrar -->
+    <dialog
+        class="ventana-detalle"
+        id="confirmacionEntrega"
+        aria-labelledby="tituloConfirmacion">
+
+        <div class="encabezado-modal">
+            <h2 id="tituloConfirmacion">Revisar entrega</h2>
+
+            <button
+                class="boton-cerrar"
+                id="btnCerrarConfirmacion"
+                type="button"
+                aria-label="Cerrar confirmación">
+                ✕
+            </button>
+        </div>
+
+        <div id="detalleConfirmacion"></div>
+
+        <p class="texto-secundario">
+            Al confirmar se guardarán los nombres, tamaños, comentario
+            y fecha de esta entrega de prueba. No se subirán archivos.
+        </p>
+
+        <button
+            class="boton entrega-boton-principal"
+            id="btnConfirmarEntrega"
+            type="button">
+            Confirmar entrega simulada
+        </button>
+
+    </dialog>
+
+</body>
+
+</html>

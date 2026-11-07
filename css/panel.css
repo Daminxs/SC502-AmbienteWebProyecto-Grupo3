@@ -959,3 +959,162 @@ td .boton-enlace {
         padding: 18px;
     }
 }
+
+/* =========================================
+   DETALLE Y ENTREGA DE ACTIVIDADES
+   ========================================= */
+
+.entrega-distribucion {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 36px;
+}
+
+.entrega-tarjeta {
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-superficie);
+}
+
+.entrega-tarjeta h2 {
+    margin-bottom: 22px;
+    font-size: 23px;
+}
+
+.entrega-tarjeta h3 {
+    margin-top: 26px;
+    font-size: 17px;
+}
+
+.entrega-tarjeta p {
+    line-height: 1.8;
+}
+
+.entrega-recomendaciones {
+    padding-left: 22px;
+    color: var(--color-secundario);
+    font-size: 14px;
+}
+
+.entrega-recomendaciones li {
+    margin-bottom: 12px;
+}
+
+.entrega-tarjeta label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.entrega-tarjeta input[type="file"] {
+    width: 100%;
+    padding: 16px;
+    border: 1px dashed #a8bbd1;
+    background-color: #f5f8fc;
+    font-size: 13px;
+}
+
+.entrega-tarjeta textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    padding: 14px;
+    resize: vertical;
+    border: 1px solid #bac8d8;
+    border-radius: 8px;
+    color: var(--color-texto);
+    background-color: white;
+    font: inherit;
+    line-height: 1.6;
+}
+
+.entrega-tarjeta textarea:focus-visible {
+    outline: 3px solid #4387cb;
+    outline-offset: 3px;
+}
+
+.entrega-ayuda {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.entrega-archivos {
+    margin: 18px 0 26px;
+    padding-left: 20px;
+    font-size: 13px;
+}
+
+.entrega-archivos li {
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.entrega-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.entrega-boton-principal {
+    background-color: var(--color-principal);
+    color: white;
+}
+
+.entrega-boton-principal:hover {
+    background-color: var(--color-principal-hover);
+}
+
+.entrega-boton-principal:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.entrega-boton-secundario {
+    border: 1px solid var(--color-borde);
+    background-color: white;
+    color: var(--color-principal);
+}
+
+.entrega-boton-secundario:hover {
+    background-color: #edf2f8;
+}
+
+.entrega-error {
+    color: #992c2c;
+    font-size: 14px;
+}
+
+.entrega-aviso {
+    padding: 14px;
+    border-radius: 8px;
+    background-color: #fff0d5;
+    color: #815414;
+    font-size: 13px;
+}
+
+.entrega-comentario {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1100px) {
+    .entrega-distribucion {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .entrega-tarjeta {
+        padding: 20px;
+    }
+
+    .entrega-acciones .boton {
+        width: 100%;
+    }
+}

@@ -8,6 +8,7 @@
     <title>Aula del curso | Campus Virtual</title>
 
     <link rel="stylesheet" href="../css/panel.css">
+    <script src="../js/entregas-demo.js" defer></script>
     <script src="../js/curso.js" defer></script>
 </head>
 
@@ -74,13 +75,8 @@
 
             <div class="barra-izquierda">
 
-                <button
-                    class="boton-menu"
-                    id="btnMenu"
-                    type="button"
-                    aria-label="Abrir menú"
-                    aria-controls="menuLateral"
-                    aria-expanded="false">
+                <button class="boton-menu" id="btnMenu" type="button" aria-label="Abrir menú"
+                    aria-controls="menuLateral" aria-expanded="false">
                     ☰
                 </button>
 
@@ -122,9 +118,7 @@
                     <div class="banner-bienvenida">
 
                         <div>
-                            <span
-                                class="etiqueta-clara"
-                                id="codigoCurso">
+                            <span class="etiqueta-clara" id="codigoCurso">
                             </span>
 
                             <h1 id="nombreCurso"></h1>
@@ -160,52 +154,27 @@
                 </section>
 
                 <!-- Navegación interna -->
-                <div
-                    class="aula-pestanas"
-                    role="tablist"
-                    aria-label="Secciones del curso">
+                <div class="aula-pestanas" role="tablist" aria-label="Secciones del curso">
 
-                    <button
-                        class="aula-pestana activa"
-                        id="tabContenidos"
-                        type="button"
-                        role="tab"
-                        aria-selected="true"
-                        aria-controls="panelContenidos"
-                        tabindex="0">
+                    <button class="aula-pestana activa" id="tabContenidos" type="button" role="tab" aria-selected="true"
+                        aria-controls="panelContenidos" tabindex="0">
                         Contenidos
                     </button>
 
-                    <button
-                        class="aula-pestana"
-                        id="tabActividades"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="panelActividades"
-                        tabindex="-1">
+                    <button class="aula-pestana" id="tabActividades" type="button" role="tab" aria-selected="false"
+                        aria-controls="panelActividades" tabindex="-1">
                         Actividades
                     </button>
 
-                    <button
-                        class="aula-pestana"
-                        id="tabParticipantes"
-                        type="button"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="panelParticipantes"
-                        tabindex="-1">
+                    <button class="aula-pestana" id="tabParticipantes" type="button" role="tab" aria-selected="false"
+                        aria-controls="panelParticipantes" tabindex="-1">
                         Participantes
                     </button>
 
                 </div>
 
                 <!-- Contenidos -->
-                <section
-                    class="seccion aula-panel"
-                    id="panelContenidos"
-                    role="tabpanel"
-                    aria-labelledby="tabContenidos"
+                <section class="seccion aula-panel" id="panelContenidos" role="tabpanel" aria-labelledby="tabContenidos"
                     tabindex="0">
 
                     <div class="encabezado-seccion">
@@ -225,13 +194,8 @@
                 </section>
 
                 <!-- Actividades -->
-                <section
-                    class="seccion aula-panel"
-                    id="panelActividades"
-                    role="tabpanel"
-                    aria-labelledby="tabActividades"
-                    tabindex="0"
-                    hidden>
+                <section class="seccion aula-panel" id="panelActividades" role="tabpanel"
+                    aria-labelledby="tabActividades" tabindex="0" hidden>
 
                     <div class="encabezado-seccion">
                         <div>
@@ -269,24 +233,15 @@
                         </table>
                     </div>
 
-                    <p
-                        class="mensaje-vacio"
-                        id="sinActividades"
-                        role="status"
-                        hidden>
+                    <p class="mensaje-vacio" id="sinActividades" role="status" hidden>
                         No hay actividades para este filtro.
                     </p>
 
                 </section>
 
                 <!-- Participantes -->
-                <section
-                    class="seccion aula-panel"
-                    id="panelParticipantes"
-                    role="tabpanel"
-                    aria-labelledby="tabParticipantes"
-                    tabindex="0"
-                    hidden>
+                <section class="seccion aula-panel" id="panelParticipantes" role="tabpanel"
+                    aria-labelledby="tabParticipantes" tabindex="0" hidden>
 
                     <div class="encabezado-seccion">
                         <div>
@@ -299,9 +254,7 @@
                         Personas de ejemplo asociadas a esta aula.
                     </p>
 
-                    <div
-                        class="aula-participantes"
-                        id="participantesCurso">
+                    <div class="aula-participantes" id="participantesCurso">
                     </div>
 
                 </section>
@@ -318,20 +271,13 @@
     </div>
 
     <!-- Detalles de una actividad -->
-    <dialog
-        class="ventana-detalle"
-        id="ventanaDetalle"
-        aria-labelledby="tituloDetalle">
+    <dialog class="ventana-detalle" id="ventanaDetalle" aria-labelledby="tituloDetalle">
 
         <div class="encabezado-modal">
 
             <h2 id="tituloDetalle"></h2>
 
-            <button
-                class="boton-cerrar"
-                id="btnCerrarDetalle"
-                type="button"
-                aria-label="Cerrar detalle">
+            <button class="boton-cerrar" id="btnCerrarDetalle" type="button" aria-label="Cerrar detalle">
                 ✕
             </button>
 
