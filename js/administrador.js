@@ -1,111 +1,366 @@
-console.log("Bienvenido al panel de administración del Campus Virtual");
+"use strict";
+
+/* =========================================
+   CAMPUS VIRTUAL - PANEL ADMINISTRADOR
+   ========================================= */
+
+console.log("Panel de administración del Campus Virtual");
+
+// ==========================================
+// CONFIGURACIÓN DE LAS API
+// ==========================================
+
+const API_LISTAR_USUARIOS = "/api/listar_usuarios.php";
+const API_CREAR_USUARIO = "/api/crear_usuario.php";
+const API_EDITAR_USUARIO = "/api/editar_usuario.php";
+
+// ==========================================
+// ROLES DEL SISTEMA
+// ==========================================
 
 const roles = [
     {
         nombre: "Estudiante",
-        permisos: ["Consultar sus cursos y materiales", "Realizar entregas", "Ver calificaciones y progreso"]
+        permisos: [
+            "Consultar sus cursos y materiales",
+            "Realizar entregas",
+            "Ver calificaciones y progreso"
+        ]
     },
     {
         nombre: "Docente",
-        permisos: ["Administrar sus cursos", "Publicar contenidos y asignaciones", "Calificar entregas"]
+        permisos: [
+            "Administrar sus cursos",
+            "Publicar contenidos y asignaciones",
+            "Calificar entregas"
+        ]
     },
     {
         nombre: "Administrador",
-        permisos: ["Gestionar usuarios y roles", "Administrar cursos y períodos", "Consultar información general"]
+        permisos: [
+            "Gestionar usuarios y roles",
+            "Administrar cursos y períodos",
+            "Consultar información general"
+        ]
     }
 ];
 
-const periodos = ["I Cuatrimestre 2026", "II Cuatrimestre 2026", "III Cuatrimestre 2026"];
+// ==========================================
+// PERÍODOS ACADÉMICOS
+// ==========================================
 
-let usuarios = [
-    { id: 1, nombre: "Laura", apellidos: "Jiménez Solano", correo: "ljimenez@ufide.ac.cr", rol: "Administrador", activo: true },
-    { id: 2, nombre: "Carlos", apellidos: "Mora Rojas", correo: "cmora@ufide.ac.cr", rol: "Docente", activo: true },
-    { id: 3, nombre: "Andrea", apellidos: "Vargas Quesada", correo: "avargas@ufide.ac.cr", rol: "Docente", activo: true },
-    { id: 4, nombre: "Daniela", apellidos: "Castro Pérez", correo: "dcastro@ufide.ac.cr", rol: "Estudiante", activo: true },
-    { id: 5, nombre: "Mateo", apellidos: "Araya Soto", correo: "maraya@ufide.ac.cr", rol: "Estudiante", activo: true },
-    { id: 6, nombre: "Valeria", apellidos: "Chaves Brenes", correo: "vchaves@ufide.ac.cr", rol: "Estudiante", activo: false }
+const periodos = [
+    "I Cuatrimestre 2026",
+    "II Cuatrimestre 2026",
+    "III Cuatrimestre 2026"
 ];
 
+// ==========================================
+// USUARIOS - MYSQL
+// ==========================================
+
+// Los usuarios se obtienen desde la API PHP.
+let usuarios = [];
+
+let cargandoUsuarios = true;
+let errorUsuarios = "";
+
+// ==========================================
+// CURSOS - DATOS DE DEMOSTRACIÓN
+// ==========================================
+
+// Esta sección se conectará con MySQL posteriormente.
+
 let cursos = [
-    { id: 1, codigo: "SC502", nombre: "Ambiente Web Cliente Servidor", docenteId: 2, periodo: "III Cuatrimestre 2026", matriculados: 28, activo: true },
-    { id: 2, codigo: "SC504", nombre: "Lenguaje de Base de Datos", docenteId: 3, periodo: "III Cuatrimestre 2026", matriculados: 24, activo: true },
-    { id: 3, codigo: "SC301", nombre: "Programación II", docenteId: 2, periodo: "II Cuatrimestre 2026", matriculados: 30, activo: false }
+    {
+        id: 1,
+        codigo: "SC502",
+        nombre: "Ambiente Web Cliente Servidor",
+        docenteId: 2,
+        periodo: "III Cuatrimestre 2026",
+        matriculados: 28,
+        activo: true
+    },
+    {
+        id: 2,
+        codigo: "SC504",
+        nombre: "Lenguaje de Base de Datos",
+        docenteId: 3,
+        periodo: "III Cuatrimestre 2026",
+        matriculados: 24,
+        activo: true
+    },
+    {
+        id: 3,
+        codigo: "SC301",
+        nombre: "Programación II",
+        docenteId: 2,
+        periodo: "II Cuatrimestre 2026",
+        matriculados: 30,
+        activo: false
+    }
 ];
 
 let siguienteId = 100;
 
+// ==========================================
+// FUNCIONES GENERALES
+// ==========================================
+
+// Obtener elementos HTML por ID.
+function elemento(id) {
+    return document.getElementById(id);
+}
+
+// Evitar insertar HTML no seguro.
 function escapar(texto) {
-    return String(texto)
+    return String(texto ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
 
+// Nombre completo del usuario.
 function nombreCompleto(usuario) {
-    return usuario.nombre + " " + usuario.apellidos;
+    return `${usuario.nombre} ${usuario.apellidos}`.trim();
 }
 
+// Buscar usuario por ID.
 function buscarUsuario(id) {
-    for (const usuario of usuarios) {
-        if (usuario.id === id) {
-            return usuario;
-        }
-    }
-    return null;
+    return usuarios.find(
+        usuario => usuario.id === Number(id)
+    ) || null;
 }
 
+// Buscar curso por ID.
 function buscarCurso(id) {
-    for (const curso of cursos) {
-        if (curso.id === id) {
-            return curso;
-        }
-    }
-    return null;
+    return cursos.find(
+        curso => curso.id === Number(id)
+    ) || null;
 }
 
+// Contar usuarios por rol.
 function contarPorRol(nombreRol) {
-    let total = 0;
-    for (const usuario of usuarios) {
-        if (usuario.rol === nombreRol) {
-            total++;
-        }
-    }
-    return total;
+    return usuarios.filter(
+        usuario => usuario.rol === nombreRol
+    ).length;
 }
 
+// Mostrar estado del usuario o curso.
 function insigniaEstado(activo) {
+
     if (activo) {
-        return `<span class="badge bg-success">Activo</span>`;
+        return '<span class="badge bg-success">Activo</span>';
     }
-    return `<span class="badge bg-secondary">Inactivo</span>`;
+
+    return '<span class="badge bg-secondary">Inactivo</span>';
 }
+
+// ==========================================
+// PETICIONES A LAS API PHP
+// ==========================================
+
+async function solicitarAPI(url, opciones = {}) {
+
+    const respuesta = await fetch(url, {
+        method: opciones.method || "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+
+        headers: {
+            "Accept": "application/json",
+            ...(opciones.headers || {})
+        },
+
+        body: opciones.body
+    });
+
+    // Sesión vencida.
+    if (respuesta.status === 401) {
+        window.location.href = "/HTML/index.html";
+        return null;
+    }
+
+    // Leer JSON.
+    let datos;
+
+    try {
+        datos = await respuesta.json();
+    } catch (error) {
+        throw new Error(
+            "El servidor no devolvió una respuesta JSON válida."
+        );
+    }
+
+    // Verificar respuesta.
+    if (!respuesta.ok || datos.success !== true) {
+
+        throw new Error(
+            datos.mensaje ||
+            `Error del servidor: ${respuesta.status}`
+        );
+    }
+
+    return datos;
+}
+
+// ==========================================
+// CARGAR USUARIOS DESDE MYSQL
+// ==========================================
+
+async function cargarUsuariosDesdeMySQL() {
+
+    cargandoUsuarios = true;
+    errorUsuarios = "";
+
+    actualizarTodo();
+
+    try {
+
+        const datos = await solicitarAPI(
+            API_LISTAR_USUARIOS
+        );
+
+        if (!datos) {
+            return false;
+        }
+
+        if (!Array.isArray(datos.usuarios)) {
+
+            throw new Error(
+                "La lista de usuarios no es válida."
+            );
+        }
+
+        // Convertir los registros obtenidos de MySQL.
+        usuarios = datos.usuarios.map(function (usuario) {
+
+            return {
+                id: Number(usuario.id),
+                nombre: String(usuario.nombre ?? ""),
+                apellidos: String(usuario.apellidos ?? ""),
+                correo: String(usuario.correo ?? ""),
+                rol: String(usuario.rol ?? ""),
+
+                activo:
+                    usuario.activo === true ||
+                    usuario.activo === 1 ||
+                    usuario.activo === "1" ||
+                    usuario.activo === "true"
+            };
+        });
+
+        console.log(
+            "Usuarios cargados desde MySQL:",
+            usuarios.length
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Error al consultar usuarios:",
+            error
+        );
+
+        usuarios = [];
+        errorUsuarios = error.message;
+
+        return false;
+
+    } finally {
+
+        cargandoUsuarios = false;
+        actualizarTodo();
+
+    }
+}
+
+// ==========================================
+// CARGAR OPCIONES DE ROLES
+// ==========================================
 
 function cargarOpcionesRol() {
-    const selectRol = document.getElementById("rolUsuario");
+
+    const selectRol = elemento("rolUsuario");
+
+    if (!selectRol) {
+        return;
+    }
+
     selectRol.innerHTML = "";
+
     for (const rol of roles) {
-        selectRol.innerHTML += `<option value="${rol.nombre}">${rol.nombre}</option>`;
+
+        selectRol.innerHTML += `
+            <option value="${escapar(rol.nombre)}">
+                ${escapar(rol.nombre)}
+            </option>
+        `;
     }
 }
+
+// ==========================================
+// CARGAR PERÍODOS
+// ==========================================
 
 function cargarOpcionesPeriodo() {
-    const selectPeriodo = document.getElementById("periodoCurso");
+
+    const selectPeriodo = elemento("periodoCurso");
+
+    if (!selectPeriodo) {
+        return;
+    }
+
     selectPeriodo.innerHTML = "";
+
     for (const periodo of periodos) {
-        selectPeriodo.innerHTML += `<option value="${periodo}">${periodo}</option>`;
+
+        selectPeriodo.innerHTML += `
+            <option value="${escapar(periodo)}">
+                ${escapar(periodo)}
+            </option>
+        `;
     }
 }
 
+// ==========================================
+// CARGAR DOCENTES
+// ==========================================
+
 function cargarOpcionesDocente() {
-    const selectDocente = document.getElementById("docenteCurso");
-    selectDocente.innerHTML = `<option value="0">Sin asignar</option>`;
+
+    const selectDocente = elemento("docenteCurso");
+
+    if (!selectDocente) {
+        return;
+    }
+
+    selectDocente.innerHTML =
+        '<option value="0">Sin asignar</option>';
+
     for (const usuario of usuarios) {
-        if (usuario.rol === "Docente" && usuario.activo) {
-            selectDocente.innerHTML += `<option value="${usuario.id}">${escapar(nombreCompleto(usuario))}</option>`;
+
+        if (
+            usuario.rol === "Docente" &&
+            usuario.activo
+        ) {
+
+            selectDocente.innerHTML += `
+                <option value="${usuario.id}">
+                    ${escapar(nombreCompleto(usuario))}
+                </option>
+            `;
         }
     }
 }
+
+// ==========================================
+// ACTUALIZAR PANEL
+// ==========================================
 
 function actualizarTodo() {
     mostrarResumen();
@@ -114,363 +369,1156 @@ function actualizarTodo() {
     mostrarCursos();
 }
 
+// ==========================================
+// RESUMEN DEL CAMPUS
+// ==========================================
+
 function mostrarResumen() {
-    let cursosActivos = 0;
-    for (const curso of cursos) {
-        if (curso.activo) {
-            cursosActivos++;
-        }
+
+    const cursosActivos = cursos.filter(
+        curso => curso.activo
+    ).length;
+
+    // Usuarios reales.
+    if (elemento("totalUsuarios")) {
+        elemento("totalUsuarios").textContent =
+            usuarios.length;
     }
 
-    document.getElementById("totalUsuarios").textContent = usuarios.length;
-    document.getElementById("totalEstudiantes").textContent = contarPorRol("Estudiante");
-    document.getElementById("totalDocentes").textContent = contarPorRol("Docente");
-    document.getElementById("totalCursos").textContent = cursosActivos;
+    // Estudiantes reales.
+    if (elemento("totalEstudiantes")) {
+        elemento("totalEstudiantes").textContent =
+            contarPorRol("Estudiante");
+    }
 
-    const lista = document.getElementById("listaRecientes");
+    // Docentes reales.
+    if (elemento("totalDocentes")) {
+        elemento("totalDocentes").textContent =
+            contarPorRol("Docente");
+    }
+
+    // Cursos temporales.
+    if (elemento("totalCursos")) {
+        elemento("totalCursos").textContent =
+            cursosActivos;
+    }
+
+    const lista = elemento("listaRecientes");
+
+    if (!lista) {
+        return;
+    }
+
     lista.innerHTML = "";
 
-    for (let i = usuarios.length - 1; i >= 0 && i >= usuarios.length - 4; i--) {
-        const usuario = usuarios[i];
+    if (cargandoUsuarios) {
+
+        lista.innerHTML = `
+            <li class="list-group-item">
+                Cargando usuarios...
+            </li>
+        `;
+
+        return;
+    }
+
+    if (errorUsuarios) {
+
+        lista.innerHTML = `
+            <li class="list-group-item text-danger">
+                ${escapar(errorUsuarios)}
+            </li>
+        `;
+
+        return;
+    }
+
+    if (usuarios.length === 0) {
+
+        lista.innerHTML = `
+            <li class="list-group-item">
+                No hay usuarios registrados.
+            </li>
+        `;
+
+        return;
+    }
+
+    // Mostrar los cuatro registros más recientes.
+    const recientes = usuarios.slice(-4).reverse();
+
+    for (const usuario of recientes) {
+
         lista.innerHTML += `
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>${escapar(nombreCompleto(usuario))} - ${escapar(usuario.correo)}</span>
-                <span class="badge bg-danger">${usuario.rol}</span>
-            </li>`;
+            <li class="list-group-item
+                       d-flex justify-content-between
+                       align-items-center">
+
+                <span>
+                    ${escapar(nombreCompleto(usuario))}
+                    -
+                    ${escapar(usuario.correo)}
+                </span>
+
+                <span class="badge bg-secondary">
+                    ${escapar(usuario.rol)}
+                </span>
+
+            </li>
+        `;
     }
 }
 
+// ==========================================
+// MOSTRAR USUARIOS
+// ==========================================
+
 function mostrarUsuarios() {
-    const texto = document.getElementById("buscarUsuario").value.trim().toLowerCase();
-    const filtro = document.getElementById("filtroRol").value;
-    const tabla = document.getElementById("tablaUsuarios");
+
+    const tabla = elemento("tablaUsuarios");
+
+    if (!tabla) {
+        return;
+    }
+
+    if (cargandoUsuarios) {
+
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center">
+                    Cargando usuarios desde MySQL...
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    if (errorUsuarios) {
+
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    class="text-center text-danger">
+                    ${escapar(errorUsuarios)}
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    const texto = (
+        elemento("buscarUsuario")?.value || ""
+    ).trim().toLowerCase();
+
+    const filtro = elemento("filtroRol")?.value || "";
+
     let filas = "";
 
     for (const usuario of usuarios) {
-        const datos = (nombreCompleto(usuario) + " " + usuario.correo).toLowerCase();
 
-        if (datos.includes(texto) && (filtro === "" || usuario.rol === filtro)) {
-            let textoEstado = "Desactivar";
-            if (!usuario.activo) {
-                textoEstado = "Activar";
-            }
+        const datos = (
+            nombreCompleto(usuario) +
+            " " +
+            usuario.correo
+        ).toLowerCase();
 
-            filas += `
-                <tr>
-                    <td>${escapar(nombreCompleto(usuario))}</td>
-                    <td>${escapar(usuario.correo)}</td>
-                    <td><span class="badge bg-danger">${usuario.rol}</span></td>
-                    <td>${insigniaEstado(usuario.activo)}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary btn-accion-usuario" data-accion="editar" data-id="${usuario.id}">Editar</button>
-                        <button class="btn btn-sm btn-outline-secondary btn-accion-usuario" data-accion="estado" data-id="${usuario.id}">${textoEstado}</button>
-                        <button class="btn btn-sm btn-outline-danger btn-accion-usuario" data-accion="eliminar" data-id="${usuario.id}">Eliminar</button>
-                    </td>
-                </tr>`;
+        const coincideBusqueda = datos.includes(texto);
+
+        const coincideRol =
+            filtro === "" ||
+            usuario.rol === filtro;
+
+        if (!coincideBusqueda || !coincideRol) {
+            continue;
         }
+
+        const textoEstado = usuario.activo
+            ? "Desactivar"
+            : "Activar";
+
+        filas += `
+            <tr>
+
+                <td>
+                    ${escapar(nombreCompleto(usuario))}
+                </td>
+
+                <td>
+                    ${escapar(usuario.correo)}
+                </td>
+
+                <td>
+                    <span class="badge bg-secondary">
+                        ${escapar(usuario.rol)}
+                    </span>
+                </td>
+
+                <td>
+                    ${insigniaEstado(usuario.activo)}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary
+                               btn-accion-usuario"
+                        data-accion="editar"
+                        data-id="${usuario.id}">
+                        Editar
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary
+                               btn-accion-usuario"
+                        data-accion="estado"
+                        data-id="${usuario.id}">
+                        ${textoEstado}
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger
+                               btn-accion-usuario"
+                        data-accion="eliminar"
+                        data-id="${usuario.id}">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        `;
     }
 
     if (filas === "") {
-        filas = `<tr><td colspan="5" class="text-center">No hay usuarios que coincidan con la búsqueda.</td></tr>`;
+
+        filas = `
+            <tr>
+                <td colspan="5" class="text-center">
+                    No hay usuarios que coincidan
+                    con la búsqueda.
+                </td>
+            </tr>
+        `;
     }
 
     tabla.innerHTML = filas;
-
-    const botones = document.querySelectorAll(".btn-accion-usuario");
-    botones.forEach(function (boton) {
-        boton.addEventListener("click", function () {
-            const id = Number(boton.dataset.id);
-            const accion = boton.dataset.accion;
-
-            if (accion === "editar") {
-                abrirModalUsuario(id);
-            } else if (accion === "estado") {
-                cambiarEstadoUsuario(id);
-            } else {
-                eliminarUsuario(id);
-            }
-        });
-    });
 }
 
-function abrirModalUsuario(id) {
-    document.getElementById("formUsuario").reset();
-    document.getElementById("idUsuario").value = "";
-    document.getElementById("tituloModalUsuario").textContent = "Nuevo usuario";
+// ==========================================
+// ABRIR MODAL DE NUEVO USUARIO
+// ==========================================
 
-    if (id) {
-        const usuario = buscarUsuario(id);
-        document.getElementById("tituloModalUsuario").textContent = "Editar usuario";
-        document.getElementById("idUsuario").value = usuario.id;
-        document.getElementById("nombreUsuario").value = usuario.nombre;
-        document.getElementById("apellidosUsuario").value = usuario.apellidos;
-        document.getElementById("correoUsuario").value = usuario.correo;
-        document.getElementById("rolUsuario").value = usuario.rol;
-    }
+function abrirModalNuevoUsuario() {
 
-    bootstrap.Modal.getOrCreateInstance(document.getElementById("modalUsuario")).show();
-}
+    const formulario = elemento("formUsuario");
+    const modal = elemento("modalUsuario");
 
-function cambiarEstadoUsuario(id) {
-    const usuario = buscarUsuario(id);
-    usuario.activo = !usuario.activo;
-    actualizarTodo();
-}
+    if (!formulario || !modal) {
 
-function eliminarUsuario(id) {
-    if (!confirm("¿Desea eliminar este usuario? Esta acción no se puede deshacer.")) {
+        console.error(
+            "No se encontró el formulario de usuarios."
+        );
+
         return;
     }
 
-    const restantes = [];
-    for (const usuario of usuarios) {
-        if (usuario.id !== id) {
-            restantes.push(usuario);
-        }
-    }
-    usuarios = restantes;
-    actualizarTodo();
+    // Limpiar formulario.
+    formulario.reset();
+
+    // Limpiar identificador.
+    elemento("idUsuario").value = "";
+
+    // Actualizar título.
+    elemento("tituloModalUsuario").textContent =
+        "Nuevo usuario";
+
+    // Cargar roles.
+    cargarOpcionesRol();
+
+    // Contraseña obligatoria para nuevos usuarios.
+    const campoPassword = elemento("passwordUsuario");
+
+    campoPassword.value = "";
+    campoPassword.required = true;
+    campoPassword.placeholder = "Mínimo 8 caracteres";
+
+    // Mostrar modal.
+    bootstrap.Modal.getOrCreateInstance(
+        modal
+    ).show();
 }
 
-const formUsuario = document.getElementById("formUsuario");
+// ==========================================
+// ABRIR MODAL DE EDITAR USUARIO
+// ==========================================
 
-formUsuario.addEventListener("submit", function (event) {
+function abrirModalEditarUsuario(id) {
+
+    const usuario = buscarUsuario(id);
+
+    if (!usuario) {
+
+        alert("No se encontró el usuario.");
+        return;
+    }
+
+    const formulario = elemento("formUsuario");
+    const modal = elemento("modalUsuario");
+
+    if (!formulario || !modal) {
+
+        alert("No se encontró el formulario.");
+        return;
+    }
+
+    // Limpiar el formulario.
+    formulario.reset();
+
+    // Cargar el ID del usuario.
+    elemento("idUsuario").value = usuario.id;
+
+    // Cargar los datos actuales.
+    elemento("nombreUsuario").value = usuario.nombre;
+
+    elemento("apellidosUsuario").value =
+        usuario.apellidos;
+
+    elemento("correoUsuario").value = usuario.correo;
+
+    // Cargar opciones de roles.
+    cargarOpcionesRol();
+
+    // Seleccionar el rol actual.
+    elemento("rolUsuario").value = usuario.rol;
+
+    // Al editar, la contraseña es opcional.
+    const campoPassword = elemento("passwordUsuario");
+
+    campoPassword.value = "";
+    campoPassword.required = false;
+
+    campoPassword.placeholder =
+        "Dejar en blanco para conservar la contraseña";
+
+    // Título del formulario.
+    elemento("tituloModalUsuario").textContent =
+        "Editar usuario";
+
+    // Mostrar el formulario.
+    bootstrap.Modal.getOrCreateInstance(
+        modal
+    ).show();
+}
+
+// ==========================================
+// VALIDAR CONTRASEÑA
+// ==========================================
+
+function validarPassword(password, obligatorio) {
+
+    // No cambiar contraseña durante la edición.
+    if (!obligatorio && password === "") {
+        return true;
+    }
+
+    // El backend valida la longitud en bytes.
+    const longitud = new TextEncoder()
+        .encode(password).length;
+
+    if (longitud < 8 || longitud > 72) {
+
+        alert(
+            "La contraseña debe tener entre 8 y 72 bytes."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+// ==========================================
+// CREAR Y EDITAR USUARIOS EN MYSQL
+// ==========================================
+
+async function guardarUsuario(event) {
+
     event.preventDefault();
 
-    const id = document.getElementById("idUsuario").value;
-    const nombre = document.getElementById("nombreUsuario").value.trim();
-    const apellidos = document.getElementById("apellidosUsuario").value.trim();
-    const correo = document.getElementById("correoUsuario").value.trim();
-    const rol = document.getElementById("rolUsuario").value;
+    const formulario = elemento("formUsuario");
+    const botonGuardar = elemento("btnGuardarUsuario");
 
-    if (nombre === "" || apellidos === "" || correo === "") {
-        alert("Complete todos los datos del usuario");
+    if (!formulario || !botonGuardar) {
         return;
     }
 
-    for (const usuario of usuarios) {
-        if (usuario.correo.toLowerCase() === correo.toLowerCase() && String(usuario.id) !== id) {
-            alert("Ya existe un usuario con ese correo");
+    // Determinar si se crea o edita un usuario.
+    const id = elemento("idUsuario").value.trim();
+
+    const esEdicion = id !== "";
+
+    // Obtener los valores del formulario.
+    const nombre = elemento("nombreUsuario").value.trim();
+
+    const apellidos =
+        elemento("apellidosUsuario").value.trim();
+
+    const correo = elemento("correoUsuario").value.trim();
+
+    const password = elemento("passwordUsuario").value;
+
+    const rol = elemento("rolUsuario").value;
+
+    // Validaciones del formulario.
+    if (!formulario.reportValidity()) {
+        return;
+    }
+
+    if (
+        nombre === "" ||
+        apellidos === "" ||
+        correo === "" ||
+        rol === ""
+    ) {
+
+        alert("Complete todos los campos obligatorios.");
+        return;
+    }
+
+    // Validar contraseña.
+    if (!validarPassword(password, !esEdicion)) {
+        return;
+    }
+
+    // Preparar datos para PHP.
+    const datosUsuario = {
+        nombre: nombre,
+        apellidos: apellidos,
+        correo: correo,
+        password: password,
+        rol: rol
+    };
+
+    // Seleccionar endpoint.
+    let api = API_CREAR_USUARIO;
+
+    if (esEdicion) {
+
+        const idNumerico = Number(id);
+
+        if (
+            !Number.isInteger(idNumerico) ||
+            idNumerico <= 0
+        ) {
+
+            alert("El identificador del usuario no es válido.");
             return;
         }
+
+        datosUsuario.id = idNumerico;
+
+        api = API_EDITAR_USUARIO;
     }
 
-    if (id === "") {
-        usuarios.push({ id: siguienteId, nombre: nombre, apellidos: apellidos, correo: correo, rol: rol, activo: true });
-        siguienteId++;
-    } else {
-        const usuario = buscarUsuario(Number(id));
-        usuario.nombre = nombre;
-        usuario.apellidos = apellidos;
-        usuario.correo = correo;
-        usuario.rol = rol;
-    }
+    // Evitar envíos duplicados.
+    botonGuardar.disabled = true;
+    botonGuardar.textContent = "Guardando...";
 
-    document.activeElement.blur();
-    bootstrap.Modal.getInstance(document.getElementById("modalUsuario")).hide();
-    actualizarTodo();
-});
+    try {
 
-function mostrarRoles() {
-    const contenedor = document.getElementById("tarjetasRoles");
-    contenedor.innerHTML = "";
+        // Enviar datos al backend.
+        const datos = await solicitarAPI(api, {
 
-    for (const rol of roles) {
-        let permisos = "";
-        for (const permiso of rol.permisos) {
-            permisos += `<li>${permiso}</li>`;
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            body: JSON.stringify(datosUsuario)
+        });
+
+        if (!datos) {
+            return;
         }
 
-        contenedor.innerHTML += `
-            <div class="col-12 col-md-4">
-                <article class="card">
-                    <div class="card-body">
-                        <h3 class="card-title">${rol.nombre}</h3>
-                        <p class="card-text rol-cantidad">${contarPorRol(rol.nombre)} usuarios</p>
-                        <ul>${permisos}</ul>
-                    </div>
-                </article>
-            </div>`;
+        // Quitar el foco antes de cerrar.
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+
+        // Cerrar el modal.
+        bootstrap.Modal.getOrCreateInstance(
+            elemento("modalUsuario")
+        ).hide();
+
+        // Limpiar el formulario.
+        formulario.reset();
+
+        elemento("idUsuario").value = "";
+
+        // Recargar los usuarios desde MySQL.
+        const actualizado = await cargarUsuariosDesdeMySQL();
+
+        if (actualizado) {
+
+            if (esEdicion) {
+
+                alert(
+                    "Usuario actualizado correctamente en MySQL."
+                );
+
+            } else {
+
+                alert(
+                    "Usuario registrado correctamente en MySQL."
+                );
+
+            }
+
+        } else {
+
+            alert(
+                "El servidor guardó los cambios, pero no fue " +
+                "posible actualizar la lista de usuarios. " +
+                "Recargá la página."
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al guardar usuario:",
+            error
+        );
+
+        alert(error.message);
+
+    } finally {
+
+        // Restaurar botón.
+        botonGuardar.disabled = false;
+        botonGuardar.textContent = "Guardar cambios";
+
+    }
+}
+
+// ==========================================
+// ACCIONES PENDIENTES DE USUARIOS
+// ==========================================
+
+function avisarGestionUsuariosPendiente() {
+
+    alert(
+        "Esta función todavía no está conectada " +
+        "con MySQL. No se realizó ningún cambio."
+    );
+}
+
+// ==========================================
+// GESTIONAR ACCIONES DE USUARIOS
+// ==========================================
+
+function gestionarAccionUsuario(event) {
+
+    const boton = event.target.closest(
+        ".btn-accion-usuario"
+    );
+
+    if (!boton) {
+        return;
     }
 
-    const tabla = document.getElementById("tablaRoles");
+    const id = Number(boton.dataset.id);
+    const accion = boton.dataset.accion;
+
+    if (accion === "editar") {
+
+        abrirModalEditarUsuario(id);
+
+    } else {
+
+        // Activar, desactivar y eliminar se
+        // conectarán a MySQL posteriormente.
+        avisarGestionUsuariosPendiente();
+
+    }
+}
+
+// ==========================================
+// MOSTRAR ROLES
+// ==========================================
+
+function mostrarRoles() {
+
+    const contenedor = elemento("tarjetasRoles");
+
+    if (contenedor) {
+
+        contenedor.innerHTML = "";
+
+        for (const rol of roles) {
+
+            let permisos = "";
+
+            for (const permiso of rol.permisos) {
+
+                permisos += `
+                    <li>${escapar(permiso)}</li>
+                `;
+            }
+
+            contenedor.innerHTML += `
+                <div class="col-12 col-md-4">
+
+                    <article class="card h-100">
+
+                        <div class="card-body">
+
+                            <h3 class="card-title">
+                                ${escapar(rol.nombre)}
+                            </h3>
+
+                            <p class="card-text rol-cantidad">
+                                ${contarPorRol(rol.nombre)}
+                                usuarios
+                            </p>
+
+                            <ul>
+                                ${permisos}
+                            </ul>
+
+                        </div>
+
+                    </article>
+
+                </div>
+            `;
+        }
+    }
+
+    const tabla = elemento("tablaRoles");
+
+    if (!tabla) {
+        return;
+    }
+
     tabla.innerHTML = "";
 
+    if (cargandoUsuarios) {
+
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="2" class="text-center">
+                    Cargando usuarios...
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    if (errorUsuarios) {
+
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="2"
+                    class="text-center text-danger">
+                    ${escapar(errorUsuarios)}
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    // Mostrar roles de los usuarios registrados.
     for (const usuario of usuarios) {
+
         let opciones = "";
+
         for (const rol of roles) {
-            let seleccionado = "";
-            if (rol.nombre === usuario.rol) {
-                seleccionado = "selected";
-            }
-            opciones += `<option value="${rol.nombre}" ${seleccionado}>${rol.nombre}</option>`;
+
+            const seleccionado =
+                rol.nombre === usuario.rol
+                    ? "selected"
+                    : "";
+
+            opciones += `
+                <option
+                    value="${escapar(rol.nombre)}"
+                    ${seleccionado}>
+                    ${escapar(rol.nombre)}
+                </option>
+            `;
         }
 
         tabla.innerHTML += `
             <tr>
-                <td>${escapar(nombreCompleto(usuario))}</td>
-                <td>
-                    <select class="form-select select-rol" data-id="${usuario.id}">${opciones}</select>
-                </td>
-            </tr>`;
-    }
 
-    const selects = document.querySelectorAll(".select-rol");
-    selects.forEach(function (select) {
-        select.addEventListener("change", function () {
-            const usuario = buscarUsuario(Number(select.dataset.id));
-            usuario.rol = select.value;
-            actualizarTodo();
-        });
-    });
+                <td>
+                    ${escapar(nombreCompleto(usuario))}
+                </td>
+
+                <td>
+                    <select
+                        class="form-select"
+                        disabled
+                        title="Cambiar roles desde Editar usuario">
+                        ${opciones}
+                    </select>
+                </td>
+
+            </tr>
+        `;
+    }
 }
 
+// ==========================================
+// MOSTRAR CURSOS
+// ==========================================
+
+// Los cursos continúan funcionando con datos
+// de demostración en JavaScript.
+
 function mostrarCursos() {
-    const texto = document.getElementById("buscarCurso").value.trim().toLowerCase();
-    const tabla = document.getElementById("tablaCursos");
+
+    const tabla = elemento("tablaCursos");
+
+    if (!tabla) {
+        return;
+    }
+
+    const texto = (
+        elemento("buscarCurso")?.value || ""
+    ).trim().toLowerCase();
+
     let filas = "";
 
     for (const curso of cursos) {
-        const datos = (curso.codigo + " " + curso.nombre).toLowerCase();
 
-        if (datos.includes(texto)) {
-            const docente = buscarUsuario(curso.docenteId);
-            let nombreDocente = "Sin asignar";
-            if (docente !== null) {
-                nombreDocente = nombreCompleto(docente);
-            }
+        const datos = (
+            curso.codigo +
+            " " +
+            curso.nombre
+        ).toLowerCase();
 
-            filas += `
-                <tr>
-                    <td>${escapar(curso.codigo)}</td>
-                    <td>${escapar(curso.nombre)}</td>
-                    <td>${escapar(nombreDocente)}</td>
-                    <td>${curso.periodo}</td>
-                    <td>${curso.matriculados}</td>
-                    <td>${insigniaEstado(curso.activo)}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary btn-accion-curso" data-accion="editar" data-id="${curso.id}">Editar</button>
-                        <button class="btn btn-sm btn-outline-danger btn-accion-curso" data-accion="eliminar" data-id="${curso.id}">Eliminar</button>
-                    </td>
-                </tr>`;
+        if (!datos.includes(texto)) {
+            continue;
         }
+
+        const docente = buscarUsuario(curso.docenteId);
+
+        let nombreDocente = "Sin asignar";
+
+        if (
+            docente !== null &&
+            docente.rol === "Docente"
+        ) {
+
+            nombreDocente = nombreCompleto(docente);
+        }
+
+        filas += `
+            <tr>
+
+                <td>
+                    ${escapar(curso.codigo)}
+                </td>
+
+                <td>
+                    ${escapar(curso.nombre)}
+                </td>
+
+                <td>
+                    ${escapar(nombreDocente)}
+                </td>
+
+                <td>
+                    ${escapar(curso.periodo)}
+                </td>
+
+                <td>
+                    ${curso.matriculados}
+                </td>
+
+                <td>
+                    ${insigniaEstado(curso.activo)}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary
+                               btn-accion-curso"
+                        data-accion="editar"
+                        data-id="${curso.id}">
+                        Editar
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger
+                               btn-accion-curso"
+                        data-accion="eliminar"
+                        data-id="${curso.id}">
+                        Eliminar
+                    </button>
+
+                </td>
+
+            </tr>
+        `;
     }
 
     if (filas === "") {
-        filas = `<tr><td colspan="7" class="text-center">No hay cursos que coincidan con la búsqueda.</td></tr>`;
+
+        filas = `
+            <tr>
+                <td colspan="7" class="text-center">
+                    No hay cursos que coincidan
+                    con la búsqueda.
+                </td>
+            </tr>
+        `;
     }
 
     tabla.innerHTML = filas;
-
-    const botones = document.querySelectorAll(".btn-accion-curso");
-    botones.forEach(function (boton) {
-        boton.addEventListener("click", function () {
-            const id = Number(boton.dataset.id);
-
-            if (boton.dataset.accion === "editar") {
-                abrirModalCurso(id);
-            } else {
-                eliminarCurso(id);
-            }
-        });
-    });
 }
 
+// ==========================================
+// ABRIR MODAL DE CURSOS
+// ==========================================
+
 function abrirModalCurso(id) {
-    document.getElementById("formCurso").reset();
-    document.getElementById("idCurso").value = "";
-    document.getElementById("tituloModalCurso").textContent = "Nuevo curso";
+
+    const formulario = elemento("formCurso");
+
+    if (!formulario) {
+        return;
+    }
+
+    formulario.reset();
+
+    elemento("idCurso").value = "";
+
+    elemento("tituloModalCurso").textContent =
+        "Nuevo curso";
+
     cargarOpcionesDocente();
 
     if (id) {
+
         const curso = buscarCurso(id);
-        document.getElementById("tituloModalCurso").textContent = "Editar curso";
-        document.getElementById("idCurso").value = curso.id;
-        document.getElementById("codigoCurso").value = curso.codigo;
-        document.getElementById("nombreCurso").value = curso.nombre;
-        document.getElementById("docenteCurso").value = curso.docenteId;
-        document.getElementById("periodoCurso").value = curso.periodo;
+
+        if (!curso) {
+
+            alert("El curso no existe.");
+            return;
+        }
+
+        elemento("tituloModalCurso").textContent =
+            "Editar curso";
+
+        elemento("idCurso").value = curso.id;
+
+        elemento("codigoCurso").value = curso.codigo;
+
+        elemento("nombreCurso").value = curso.nombre;
+
+        elemento("periodoCurso").value = curso.periodo;
+
+        const selectDocente = elemento("docenteCurso");
+
+        if (selectDocente) {
+
+            const existe = Array.from(
+                selectDocente.options
+            ).some(function (opcion) {
+
+                return opcion.value === String(
+                    curso.docenteId
+                );
+            });
+
+            selectDocente.value = existe
+                ? String(curso.docenteId)
+                : "0";
+        }
     }
 
-    bootstrap.Modal.getOrCreateInstance(document.getElementById("modalCurso")).show();
+    bootstrap.Modal.getOrCreateInstance(
+        elemento("modalCurso")
+    ).show();
 }
 
+// ==========================================
+// ELIMINAR CURSO TEMPORAL
+// ==========================================
+
 function eliminarCurso(id) {
-    if (!confirm("¿Desea eliminar este curso? Esta acción no se puede deshacer.")) {
+
+    const confirmar = confirm(
+        "¿Desea eliminar este curso de demostración? " +
+        "El cambio será temporal y no afectará MySQL."
+    );
+
+    if (!confirmar) {
         return;
     }
 
-    const restantes = [];
-    for (const curso of cursos) {
-        if (curso.id !== id) {
-            restantes.push(curso);
-        }
-    }
-    cursos = restantes;
+    cursos = cursos.filter(
+        curso => curso.id !== id
+    );
+
     actualizarTodo();
 }
 
-const formCurso = document.getElementById("formCurso");
+// ==========================================
+// GUARDAR CURSO TEMPORAL
+// ==========================================
 
-formCurso.addEventListener("submit", function (event) {
+function guardarCurso(event) {
+
     event.preventDefault();
 
-    const id = document.getElementById("idCurso").value;
-    const codigo = document.getElementById("codigoCurso").value.trim().toUpperCase();
-    const nombre = document.getElementById("nombreCurso").value.trim();
-    const docenteId = Number(document.getElementById("docenteCurso").value);
-    const periodo = document.getElementById("periodoCurso").value;
+    const formulario = elemento("formCurso");
 
-    if (codigo === "" || nombre === "") {
-        alert("Complete el código y el nombre del curso");
+    if (!formulario.reportValidity()) {
         return;
     }
 
-    for (const curso of cursos) {
-        if (curso.codigo === codigo && curso.periodo === periodo && String(curso.id) !== id) {
-            alert("Ese código ya existe en el mismo período");
-            return;
-        }
+    const id = elemento("idCurso").value;
+
+    const codigo = elemento("codigoCurso")
+        .value.trim().toUpperCase();
+
+    const nombre = elemento("nombreCurso")
+        .value.trim();
+
+    const docenteId = Number(
+        elemento("docenteCurso").value
+    );
+
+    const periodo = elemento("periodoCurso").value;
+
+    if (codigo === "" || nombre === "") {
+
+        alert("Complete el código y el nombre del curso.");
+        return;
+    }
+
+    // Comprobar que no se repita en un período.
+    const repetido = cursos.some(function (curso) {
+
+        return (
+            curso.codigo === codigo &&
+            curso.periodo === periodo &&
+            String(curso.id) !== id
+        );
+    });
+
+    if (repetido) {
+
+        alert("Ese código ya existe en el mismo período.");
+        return;
     }
 
     if (id === "") {
-        cursos.push({ id: siguienteId, codigo: codigo, nombre: nombre, docenteId: docenteId, periodo: periodo, matriculados: 0, activo: true });
+
+        // Crear curso temporal.
+        cursos.push({
+            id: siguienteId,
+            codigo: codigo,
+            nombre: nombre,
+            docenteId: docenteId,
+            periodo: periodo,
+            matriculados: 0,
+            activo: true
+        });
+
         siguienteId++;
+
     } else {
+
+        // Editar curso temporal.
         const curso = buscarCurso(Number(id));
+
+        if (!curso) {
+
+            alert("No se encontró el curso.");
+            return;
+        }
+
         curso.codigo = codigo;
         curso.nombre = nombre;
         curso.docenteId = docenteId;
         curso.periodo = periodo;
     }
 
-    document.activeElement.blur();
-    bootstrap.Modal.getInstance(document.getElementById("modalCurso")).hide();
+    // Cerrar modal.
+    if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
+
+    bootstrap.Modal.getOrCreateInstance(
+        elemento("modalCurso")
+    ).hide();
+
     actualizarTodo();
-});
 
-document.getElementById("btnNuevoUsuario").addEventListener("click", function () {
-    abrirModalUsuario(0);
-});
+    alert(
+        "Curso actualizado en la demostración. " +
+        "Este cambio todavía no se guarda en MySQL."
+    );
+}
 
-document.getElementById("btnNuevoCurso").addEventListener("click", function () {
-    abrirModalCurso(0);
-});
+// ==========================================
+// GESTIONAR ACCIONES DE CURSOS
+// ==========================================
 
-document.getElementById("buscarUsuario").addEventListener("input", mostrarUsuarios);
-document.getElementById("filtroRol").addEventListener("change", mostrarUsuarios);
-document.getElementById("buscarCurso").addEventListener("input", mostrarCursos);
+function gestionarAccionCurso(event) {
 
-const enlacesMenu = document.querySelectorAll("nav .nav-link");
-enlacesMenu.forEach(function (enlace) {
-    enlace.addEventListener("click", function () {
-        enlacesMenu.forEach(function (otro) {
-            otro.classList.remove("active");
+    const boton = event.target.closest(
+        ".btn-accion-curso"
+    );
+
+    if (!boton) {
+        return;
+    }
+
+    const id = Number(boton.dataset.id);
+    const accion = boton.dataset.accion;
+
+    if (accion === "editar") {
+
+        abrirModalCurso(id);
+
+    } else if (accion === "eliminar") {
+
+        eliminarCurso(id);
+
+    }
+}
+
+// ==========================================
+// CONFIGURAR EVENTOS DEL PANEL
+// ==========================================
+
+function configurarEventos() {
+
+    // Nuevo usuario.
+    elemento("btnNuevoUsuario")?.addEventListener(
+        "click",
+        abrirModalNuevoUsuario
+    );
+
+    // Crear o editar usuario.
+    elemento("formUsuario")?.addEventListener(
+        "submit",
+        guardarUsuario
+    );
+
+    // Acciones de usuarios.
+    elemento("tablaUsuarios")?.addEventListener(
+        "click",
+        gestionarAccionUsuario
+    );
+
+    // Nuevo curso.
+    elemento("btnNuevoCurso")?.addEventListener(
+        "click",
+        function () {
+            abrirModalCurso(0);
+        }
+    );
+
+    // Guardar curso temporal.
+    elemento("formCurso")?.addEventListener(
+        "submit",
+        guardarCurso
+    );
+
+    // Acciones de cursos.
+    elemento("tablaCursos")?.addEventListener(
+        "click",
+        gestionarAccionCurso
+    );
+
+    // Buscar usuarios.
+    elemento("buscarUsuario")?.addEventListener(
+        "input",
+        mostrarUsuarios
+    );
+
+    // Filtrar usuarios por rol.
+    elemento("filtroRol")?.addEventListener(
+        "change",
+        mostrarUsuarios
+    );
+
+    // Buscar cursos.
+    elemento("buscarCurso")?.addEventListener(
+        "input",
+        mostrarCursos
+    );
+
+    // Navegación del panel.
+    const enlacesMenu = document.querySelectorAll(
+        "nav .nav-link"
+    );
+
+    enlacesMenu.forEach(function (enlace) {
+
+        enlace.addEventListener("click", function () {
+
+            enlacesMenu.forEach(function (otro) {
+                otro.classList.remove("active");
+            });
+
+            enlace.classList.add("active");
         });
-        enlace.classList.add("active");
     });
-});
+}
 
-cargarOpcionesRol();
-cargarOpcionesPeriodo();
-actualizarTodo();
+// ==========================================
+// INICIAR PANEL ADMINISTRATIVO
+// ==========================================
+
+function iniciarPanel() {
+
+    // Configurar eventos.
+    configurarEventos();
+
+    // Cargar roles y períodos.
+    cargarOpcionesRol();
+    cargarOpcionesPeriodo();
+
+    // Mostrar componentes iniciales.
+    actualizarTodo();
+
+    // Consultar usuarios desde MySQL.
+    cargarUsuariosDesdeMySQL();
+}
+
+// Esperar a que cargue el documento.
+if (document.readyState === "loading") {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        iniciarPanel
+    );
+
+} else {
+
+    iniciarPanel();
+
+}
